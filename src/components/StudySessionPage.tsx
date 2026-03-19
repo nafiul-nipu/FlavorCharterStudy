@@ -313,7 +313,7 @@ export default function StudySessionPage() {
       <section className="study-frame">
         <header className="study-header">
           <div>
-            <p className="eyebrow">Standalone Study</p>
+            <p className="eyebrow">Visualization Study</p>
             <h1>{pack.title}</h1>
           </div>
           <div className="progress-panel">

@@ -1,9 +1,6 @@
 :root {
   color: #1f2937;
-  background:
-    radial-gradient(circle at top left, rgba(240, 180, 90, 0.18), transparent 30%),
-    radial-gradient(circle at top right, rgba(125, 164, 224, 0.2), transparent 30%),
-    linear-gradient(180deg, #fbfaf7 0%, #f2efe8 100%);
+  background: linear-gradient(180deg, #fcfcfb 0%, #f6f4ef 100%);
   font-family: "Avenir Next", "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
