@@ -72,6 +72,22 @@ export default function StudySessionPage() {
     message: "",
   });
 
+  function setSessionType(sessionType: "real" | "test") {
+    setSession((prev) => {
+      const currentPrefix = prev.sessionType === "test" ? "TEST_" : "REAL_";
+      const nextPrefix = sessionType === "test" ? "TEST_" : "REAL_";
+      const currentId = prev.participantId || "";
+      const suffix = currentId.startsWith(currentPrefix)
+        ? currentId.slice(currentPrefix.length)
+        : crypto.randomUUID().slice(0, 8);
+      return {
+        ...prev,
+        sessionType,
+        participantId: `${nextPrefix}${suffix || crypto.randomUUID().slice(0, 8)}`,
+      };
+    });
+  }
+
   useEffect(() => {
     let cancelled = false;
     void (async () => {
@@ -247,7 +263,11 @@ export default function StudySessionPage() {
 
   async function submitAllResponses() {
     if (!pack) return;
-    setSubmission({ status: "submitting", message: "Submitting responses..." });
+    setSubmission({
+      status: "submitting",
+      message:
+        "Submitting responses. Important: do not close this browser tab until submission is complete.",
+    });
     const result = await submitStudySession(pack, session);
     if (result.ok) {
       setSubmission({ status: "submitted", message: result.message });
@@ -301,18 +321,48 @@ export default function StudySessionPage() {
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
             <p className="muted small">
-              Participant: <code>{session.participantId.slice(0, 8)}</code> | Step{" "}
+              Participant: <code>{session.participantId}</code> | Step{" "}
               {session.currentStep + 1} / {steps.length}
             </p>
           </div>
         </header>
 
         {currentStep.type === "consent" ? (
-          <article className="card">
+          <article className="card info-card consent-card">
             <h2>Consent and study overview</h2>
             {pack.consentText.map((line) => (
               <FormattedParagraph key={line} text={line} className="muted" />
             ))}
+            <label
+              className="muted"
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "0.65rem",
+                margin: "0.75rem 0 1rem",
+              }}
+            >
+              <input
+                type="checkbox"
+                style={{ marginTop: "0.2rem" }}
+                checked={session.sessionType === "test"}
+                onChange={(event) =>
+                  setSessionType(event.target.checked ? "test" : "real")
+                }
+              />
+              <span>
+                <span>This is a pilot/test session (research team only).</span>
+                <span
+                  className="muted small"
+                  style={{ display: "block", marginTop: "0.2rem" }}
+                >
+                  Do not check this box if you are a real participant.
+                </span>
+              </span>
+            </label>
+            <p className="muted small" style={{ marginTop: 0 }}>
+              Session ID: <code>{session.participantId}</code>
+            </p>
             <button className="primary-button" onClick={acceptConsent}>
               I agree and want to continue
             </button>
@@ -356,7 +406,7 @@ export default function StudySessionPage() {
         ) : null}
 
         {currentStep.type === "intro" ? (
-          <article className="card">
+          <article className="card info-card intro-card">
             <h2>Study instructions</h2>
             {pack.introText.map((line) => (
               <FormattedParagraph key={line} text={line} className="muted" />

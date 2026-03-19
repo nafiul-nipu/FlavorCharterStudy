@@ -94,6 +94,13 @@ code {
   overflow: auto;
 }
 
+.info-card {
+  max-width: 1040px;
+  margin: 0 auto;
+  overflow: visible;
+  align-self: start;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;

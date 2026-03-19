@@ -30,6 +30,7 @@ export type SavedFinalPreferences = Record<string, string>;
 
 export type SavedSession = {
   participantId: string;
+  sessionType?: "real" | "test";
   currentStep: number;
   consentAccepted: boolean;
   consentAcceptedAt?: string;
@@ -43,8 +44,10 @@ export type SavedSession = {
 };
 
 export function createEmptySession(): SavedSession {
+  const token = crypto.randomUUID().slice(0, 8);
   return {
-    participantId: crypto.randomUUID(),
+    participantId: `REAL_${token}`,
+    sessionType: "real",
     currentStep: 0,
     consentAccepted: false,
     backgroundAnswers: {},
