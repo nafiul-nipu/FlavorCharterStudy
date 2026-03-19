@@ -31,9 +31,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate study pack
-        run: npm run generate-study-pack
-
       - name: Build app
         run: npm run build
         env:
