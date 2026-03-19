@@ -309,6 +309,7 @@ code {
   height: 10px;
   border-radius: 999px;
   display: inline-block;
+  background: #94a3b8;
 }
 
 .onboarding-note-card p {

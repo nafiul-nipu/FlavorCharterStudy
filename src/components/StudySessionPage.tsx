@@ -270,7 +270,12 @@ export default function StudySessionPage() {
     });
     const result = await submitStudySession(pack, session);
     if (result.ok) {
-      setSubmission({ status: "submitted", message: result.message });
+      clearSession();
+      setSubmission({
+        status: "submitted",
+        message:
+          "Responses submitted successfully. You may now close this browser tab.",
+      });
       setSession((prev) => ({
         ...prev,
         submittedAt: new Date().toISOString(),
@@ -694,7 +699,6 @@ function OnboardingScreen({
                 <div className="onboarding-note-head">
                   <span
                     className="onboarding-note-dot"
-                    style={{ background: note.color }}
                     aria-hidden="true"
                   />
                   <strong>{note.title}</strong>
@@ -931,12 +935,10 @@ function onboardingNotes(chartType: ChartType) {
       return [
         {
           title: "Profiles",
-          color: "#94a3b8",
           body: "The two profiles represent the baseline and the subgroup on the same set of taste axes.",
         },
         {
           title: "Differences",
-          color: "#fb923c",
           body: "Where the two shapes separate more, the subgroup differs more strongly from the baseline.",
         },
       ];
@@ -944,12 +946,10 @@ function onboardingNotes(chartType: ChartType) {
       return [
         {
           title: "Direction",
-          color: "#d9534f",
           body: "Direction indicates whether the subgroup is above or below the baseline for an attribute.",
         },
         {
           title: "Magnitude",
-          color: "#0275d8",
           body: "Larger displacement indicates a larger subgroup-baseline difference.",
         },
       ];

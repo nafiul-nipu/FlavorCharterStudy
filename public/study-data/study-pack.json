@@ -3,21 +3,21 @@
   "responseEndpoint": "",
   "consentText": [
     "**You are invited to participate in a research study on data visualization.**",
-    "The purpose of this study is to evaluate how different chart designs support interpretation of flavor-related data.",
-    "You will be asked to answer questions based on information shown in charts.",
+    "The purpose of this study is to evaluate how different chart designs support interpretation of multivariate flavor data, including identifying key attributes, variability, and subgroup differences.",
+    "You will be asked to answer questions based on information shown in charts representing flavor characteristics of foods.",
     "**The study will take approximately 8-12 minutes to complete.**",
     "**We will record your responses and response times.**",
-    "**This study evaluates chart readability and task support, not personal ability.**",
+    "**This study evaluates how well different visual representations support specific interpretation tasks, not personal ability.**",
     "**Your participation is voluntary, and you may stop at any time.**",
     "**All responses will be used for research purposes only and will remain anonymous.**"
   ],
   "introText": [
-    "In this study, you will view different chart types that represent flavor characteristics of foods.",
-    "Your task is to interpret the charts and answer questions about the information they display.",
+    "In this study, you will view charts that represent flavor characteristics of foods.",
+    "Your task is to interpret each chart and answer questions based on the information it displays.",
     "**The study is divided into two parts:**",
-    "**Part 1** focuses on understanding flavor summaries (mean values and variability).",
+    "**Part 1** focuses on identifying dominant attributes and variability in flavor summaries.",
     "**Part 2** focuses on comparing subgroup differences relative to a baseline.",
-    "Each part begins with a short tutorial, followed by practice trials and then main trials.",
+    "Each part includes a brief tutorial, followed by practice trials and then main trials.",
     "**Please answer based only on the information visible in the chart.**",
     "**Work as accurately and quickly as possible.**"
   ],
@@ -48,7 +48,7 @@
       "id": "part1",
       "partId": "part1",
       "title": "Part 1: Flavor Summary",
-      "intro": "This part evaluates how different chart types support understanding flavor summaries. You will identify mean values and variability across taste attributes.",
+      "intro": "In this part, you will use different chart types to interpret flavor summaries of foods. You will identify attributes with the highest values and those with greater variability. You will first see a short tutorial for the charts in this part.",
       "taskInstruction": "Select the best answer based only on the information visible in the chart.",
       "onboarding": [
         {
@@ -5122,7 +5122,7 @@
       "id": "part2",
       "partId": "part2",
       "title": "Part 2: Subgroup Comparison",
-      "intro": "This part evaluates how chart types support comparison between a subgroup and a baseline. You will identify differences across taste attributes.",
+      "intro": "In this part, you will use different chart types to compare a subgroup with a baseline. You will identify which attributes are higher in the subgroup and which differ the most. You will first see a short tutorial for the charts in this part.",
       "taskInstruction": "Select the best answer based only on the information visible in the chart.",
       "onboarding": [
         {
