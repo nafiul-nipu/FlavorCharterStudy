@@ -12,7 +12,6 @@ type Props = {
 function buildPath(
   keys: string[],
   values: MeansByTaste,
-  radius: number,
   scale: d3.ScaleLinear<number, number>,
 ) {
   const angleSlice = (Math.PI * 2) / Math.max(1, keys.length);
@@ -49,8 +48,8 @@ export default function OverlaidRadarChart({
     .domain([valueRange.min, valueRange.max])
     .range([0, outerRadius]);
 
-  const baselinePath = buildPath(keys, baselineMean, radius, scale);
-  const comparePath = buildPath(keys, compareMean, radius, scale);
+  const baselinePath = buildPath(keys, baselineMean, scale);
+  const comparePath = buildPath(keys, compareMean, scale);
 
   return (
     <svg

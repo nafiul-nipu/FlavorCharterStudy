@@ -15,7 +15,6 @@ import { submitStudySession } from "../lib/sync";
 import type {
   ChartType,
   ComparisonStimulus,
-  FinalPreferenceQuestion,
   OutlierStimulus,
   StudyBlock,
   StudyPack,
@@ -205,6 +204,8 @@ export default function StudySessionPage() {
     const sessionStartedAtMs = session.sessionStartedAt
       ? new Date(session.sessionStartedAt).getTime()
       : now;
+    const responseKind: "practice" | "real" =
+      trial.kind === "practice" ? "practice" : "real";
     const nextResponse = {
       participantId: session.participantId,
       trialId: trial.id,
@@ -222,7 +223,7 @@ export default function StudySessionPage() {
       responseTimeMs: now - trialStartedAt,
       difficulty: trial.difficulty,
       trialOrderIndex: getTrialOrderIndex(currentStep, trial),
-      kind: trial.kind,
+      kind: responseKind,
       answeredAt: new Date().toISOString(),
       timeSinceSessionStartMs: now - sessionStartedAtMs,
     };
