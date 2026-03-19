@@ -1065,7 +1065,7 @@ def main() -> None:
     with OUTPUT.open("w") as handle:
         json.dump(pack, handle, indent=2)
         handle.write("\n")
-    print(f"Wrote {OUTPUT.relative_to(ROOT)}")
+    print(f"Wrote {OUTPUT.relative_to(REPO_ROOT)}")
     print_developer_summary(pack)
 
 
