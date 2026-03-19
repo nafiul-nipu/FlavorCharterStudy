@@ -5,13 +5,22 @@ import math
 import random
 from collections import defaultdict
 from dataclasses import dataclass
+import os
 from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "FlavorCharterTool" / "backend" / "data" / "users.json"
-OUTPUT = ROOT / "FlavorCharterStudy" / "public" / "study-data" / "study-pack.json"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SOURCE_CANDIDATES = [
+    Path(os.environ["FLAVOR_CHARTER_USERS_JSON"])
+    if "FLAVOR_CHARTER_USERS_JSON" in os.environ
+    else None,
+    REPO_ROOT / "data" / "users.json",
+    REPO_ROOT.parent / "FlavorCharter" / "FlavorCharterTool" / "backend" / "data" / "users.json",
+    REPO_ROOT.parent / "FlavorCharterTool" / "backend" / "data" / "users.json",
+]
+SOURCE = next((path for path in SOURCE_CANDIDATES if path and path.exists()), None)
+OUTPUT = REPO_ROOT / "public" / "study-data" / "study-pack.json"
 
 RANDOM_SEED = 7
 
@@ -77,6 +86,15 @@ class ComparisonCandidate:
 
 
 def load_users() -> dict[str, Any]:
+    if SOURCE is None:
+        searched = "\n".join(
+            f"- {path}" for path in SOURCE_CANDIDATES if path is not None
+        )
+        raise FileNotFoundError(
+            "Could not find users.json. Searched:\n"
+            f"{searched}\n\n"
+            "Set FLAVOR_CHARTER_USERS_JSON to the dataset path if needed."
+        )
     with SOURCE.open() as handle:
         return json.load(handle)
 
