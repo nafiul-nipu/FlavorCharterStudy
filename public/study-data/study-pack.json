@@ -1,0 +1,6164 @@
+{
+  "title": "Usability Study for Flavor Encodings",
+  "responseEndpoint": "",
+  "consentText": [
+    "**You are invited to participate in a research study on data visualization.**",
+    "The purpose of this study is to evaluate how different chart designs support interpretation of flavor-related data.",
+    "You will be asked to answer questions based on information shown in charts.",
+    "**The study will take approximately 8-12 minutes to complete.**",
+    "**We will record your responses and response times.**",
+    "**This study evaluates chart readability and task support, not personal ability.**",
+    "**Your participation is voluntary, and you may stop at any time.**",
+    "**All responses will be used for research purposes only and will remain anonymous.**"
+  ],
+  "introText": [
+    "In this study, you will view different chart types that represent flavor characteristics of foods.",
+    "Your task is to interpret the charts and answer questions about the information they display.",
+    "**The study is divided into two parts:**",
+    "**Part 1** focuses on understanding flavor summaries (mean values and variability).",
+    "**Part 2** focuses on comparing subgroup differences relative to a baseline.",
+    "Each part begins with a short tutorial, followed by practice trials and then main trials.",
+    "**Please answer based only on the information visible in the chart.**",
+    "**Work as accurately and quickly as possible.**"
+  ],
+  "backgroundQuestions": [
+    {
+      "id": "chart_familiarity",
+      "label": "How familiar are you with bar charts, violin plots, and radar charts?",
+      "options": [
+        "Not at all familiar",
+        "Slightly familiar",
+        "Moderately familiar",
+        "Very familiar"
+      ]
+    },
+    {
+      "id": "visualization_experience",
+      "label": "How would you describe your data visualization experience?",
+      "options": [
+        "Beginner",
+        "Intermediate",
+        "Advanced",
+        "Expert"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "part1",
+      "partId": "part1",
+      "title": "Part 1: Flavor Summary",
+      "intro": "This part evaluates how different chart types support understanding flavor summaries. You will identify mean values and variability across taste attributes.",
+      "taskInstruction": "Select the best answer based only on the information visible in the chart.",
+      "onboarding": [
+        {
+          "chartType": "grouped_bar",
+          "title": "Grouped Bar Chart",
+          "callouts": [
+            "Taller bars indicate larger mean ratings."
+          ]
+        },
+        {
+          "chartType": "violin_plot",
+          "title": "Violin Plot",
+          "callouts": [
+            "Wider regions indicate more ratings. Greater vertical spread indicates higher variability."
+          ]
+        },
+        {
+          "chartType": "outlier_radar",
+          "title": "Distribution-Aware Radial Profile",
+          "callouts": [
+            "The outline shows the mean. The bands show how ratings are distributed."
+          ]
+        }
+      ],
+      "onboardingPreviewTrials": [
+        {
+          "id": "part1-preview-bar",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "preview",
+          "chartType": "grouped_bar",
+          "taskType": "tutorial_preview",
+          "prompt": "Onboarding preview",
+          "options": [],
+          "correctAnswer": "",
+          "stimulus": {
+            "foodName": "Dark Chocolate",
+            "count": 67,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 1.69,
+              "Sourness": 0.55,
+              "Saltiness": 0.46,
+              "Bitterness": 3.45,
+              "Savoriness": 0.76,
+              "Fatness": 2.03,
+              "Astringency": 1.22,
+              "Aromaticity": 2.66,
+              "Texture": 1.7,
+              "Piquancy": 0.18
+            },
+            "stdevs": {
+              "Sweetness": 1.41,
+              "Sourness": 0.97,
+              "Saltiness": 0.8,
+              "Bitterness": 1.48,
+              "Savoriness": 1.21,
+              "Fatness": 1.6,
+              "Astringency": 1.54,
+              "Aromaticity": 1.72,
+              "Texture": 1.49,
+              "Piquancy": 0.79
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 17,
+                  "percent": 25.4
+                },
+                "1": {
+                  "count": 16,
+                  "percent": 23.9
+                },
+                "2": {
+                  "count": 15,
+                  "percent": 22.4
+                },
+                "3": {
+                  "count": 12,
+                  "percent": 17.9
+                },
+                "4": {
+                  "count": 4,
+                  "percent": 6.0
+                },
+                "5": {
+                  "count": 3,
+                  "percent": 4.5
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 46,
+                  "percent": 68.7
+                },
+                "1": {
+                  "count": 11,
+                  "percent": 16.4
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 7.5
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 6.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 1.5
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 46,
+                  "percent": 68.7
+                },
+                "1": {
+                  "count": 14,
+                  "percent": 20.9
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 6.0
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 4.5
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 5,
+                  "percent": 7.5
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 6.0
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 7.5
+                },
+                "3": {
+                  "count": 13,
+                  "percent": 19.4
+                },
+                "4": {
+                  "count": 22,
+                  "percent": 32.8
+                },
+                "5": {
+                  "count": 18,
+                  "percent": 26.9
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 42,
+                  "percent": 62.7
+                },
+                "1": {
+                  "count": 10,
+                  "percent": 14.9
+                },
+                "2": {
+                  "count": 9,
+                  "percent": 13.4
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 3.0
+                },
+                "4": {
+                  "count": 3,
+                  "percent": 4.5
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 1.5
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 16,
+                  "percent": 23.9
+                },
+                "1": {
+                  "count": 14,
+                  "percent": 20.9
+                },
+                "2": {
+                  "count": 8,
+                  "percent": 11.9
+                },
+                "3": {
+                  "count": 14,
+                  "percent": 20.9
+                },
+                "4": {
+                  "count": 11,
+                  "percent": 16.4
+                },
+                "5": {
+                  "count": 4,
+                  "percent": 6.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 37,
+                  "percent": 55.2
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 9.0
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 6.0
+                },
+                "3": {
+                  "count": 13,
+                  "percent": 19.4
+                },
+                "4": {
+                  "count": 6,
+                  "percent": 9.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 1.5
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 13,
+                  "percent": 19.4
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 7.5
+                },
+                "2": {
+                  "count": 11,
+                  "percent": 16.4
+                },
+                "3": {
+                  "count": 12,
+                  "percent": 17.9
+                },
+                "4": {
+                  "count": 15,
+                  "percent": 22.4
+                },
+                "5": {
+                  "count": 11,
+                  "percent": 16.4
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 19,
+                  "percent": 28.4
+                },
+                "1": {
+                  "count": 16,
+                  "percent": 23.9
+                },
+                "2": {
+                  "count": 10,
+                  "percent": 14.9
+                },
+                "3": {
+                  "count": 12,
+                  "percent": 17.9
+                },
+                "4": {
+                  "count": 8,
+                  "percent": 11.9
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 3.0
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 62,
+                  "percent": 92.5
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 4.5
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 1.5
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 1.5
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                5
+              ],
+              "Sourness": [
+                3,
+                4
+              ],
+              "Saltiness": [
+                3
+              ],
+              "Bitterness": [
+                0
+              ],
+              "Savoriness": [
+                4,
+                5
+              ],
+              "Fatness": [],
+              "Astringency": [
+                5
+              ],
+              "Aromaticity": [],
+              "Texture": [
+                5
+              ],
+              "Piquancy": [
+                4,
+                5
+              ]
+            }
+          }
+        },
+        {
+          "id": "part1-preview-violin",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "preview",
+          "chartType": "violin_plot",
+          "taskType": "tutorial_preview",
+          "prompt": "Onboarding preview",
+          "options": [],
+          "correctAnswer": "",
+          "stimulus": {
+            "foodName": "Dark Coffee",
+            "count": 57,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.44,
+              "Sourness": 0.86,
+              "Saltiness": 0.3,
+              "Bitterness": 3.86,
+              "Savoriness": 0.49,
+              "Fatness": 0.3,
+              "Astringency": 1.98,
+              "Aromaticity": 3.14,
+              "Texture": 0.54,
+              "Piquancy": 0.3
+            },
+            "stdevs": {
+              "Sweetness": 0.9,
+              "Sourness": 1.18,
+              "Saltiness": 0.77,
+              "Bitterness": 1.52,
+              "Savoriness": 0.86,
+              "Fatness": 0.65,
+              "Astringency": 1.59,
+              "Aromaticity": 1.72,
+              "Texture": 0.96,
+              "Piquancy": 0.92
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 42,
+                  "percent": 73.7
+                },
+                "1": {
+                  "count": 10,
+                  "percent": 17.5
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 1.8
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 5.3
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 1.8
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 31,
+                  "percent": 54.4
+                },
+                "1": {
+                  "count": 12,
+                  "percent": 21.1
+                },
+                "2": {
+                  "count": 8,
+                  "percent": 14.0
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 1.8
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 1.8
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 49,
+                  "percent": 86.0
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 1.8
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 8.8
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 3.5
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 4,
+                  "percent": 7.0
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 3.5
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 7.0
+                },
+                "3": {
+                  "count": 6,
+                  "percent": 10.5
+                },
+                "4": {
+                  "count": 13,
+                  "percent": 22.8
+                },
+                "5": {
+                  "count": 28,
+                  "percent": 49.1
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 39,
+                  "percent": 68.4
+                },
+                "1": {
+                  "count": 12,
+                  "percent": 21.1
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 3.5
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 45,
+                  "percent": 78.9
+                },
+                "1": {
+                  "count": 8,
+                  "percent": 14.0
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 5.3
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 1.8
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 19,
+                  "percent": 33.3
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 5.3
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 12.3
+                },
+                "3": {
+                  "count": 17,
+                  "percent": 29.8
+                },
+                "4": {
+                  "count": 10,
+                  "percent": 17.5
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 1.8
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 10,
+                  "percent": 17.5
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 1.8
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 7.0
+                },
+                "3": {
+                  "count": 12,
+                  "percent": 21.1
+                },
+                "4": {
+                  "count": 16,
+                  "percent": 28.1
+                },
+                "5": {
+                  "count": 14,
+                  "percent": 24.6
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 41,
+                  "percent": 71.9
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 8.8
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 12.3
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 50,
+                  "percent": 87.7
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 5.3
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 3.5
+                },
+                "4": {
+                  "count": 2,
+                  "percent": 3.5
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                3,
+                4
+              ],
+              "Sourness": [
+                4,
+                5
+              ],
+              "Saltiness": [
+                2,
+                3
+              ],
+              "Bitterness": [
+                0
+              ],
+              "Savoriness": [
+                3
+              ],
+              "Fatness": [
+                2,
+                3
+              ],
+              "Astringency": [],
+              "Aromaticity": [],
+              "Texture": [
+                3
+              ],
+              "Piquancy": [
+                3,
+                4
+              ]
+            }
+          }
+        },
+        {
+          "id": "part1-preview-radial",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "preview",
+          "chartType": "outlier_radar",
+          "taskType": "tutorial_preview",
+          "prompt": "Onboarding preview",
+          "options": [],
+          "correctAnswer": "",
+          "stimulus": {
+            "foodName": "Parmesan",
+            "count": 55,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.82,
+              "Sourness": 1.05,
+              "Saltiness": 3.55,
+              "Bitterness": 0.58,
+              "Savoriness": 2.25,
+              "Fatness": 2.64,
+              "Astringency": 0.89,
+              "Aromaticity": 2.18,
+              "Texture": 2.05,
+              "Piquancy": 0.31
+            },
+            "stdevs": {
+              "Sweetness": 1.1,
+              "Sourness": 1.05,
+              "Saltiness": 1.45,
+              "Bitterness": 0.85,
+              "Savoriness": 2.1,
+              "Fatness": 1.72,
+              "Astringency": 1.23,
+              "Aromaticity": 1.59,
+              "Texture": 1.61,
+              "Piquancy": 0.95
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 29,
+                  "percent": 52.7
+                },
+                "1": {
+                  "count": 15,
+                  "percent": 27.3
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 9.1
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.3
+                },
+                "4": {
+                  "count": 2,
+                  "percent": 3.6
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 22,
+                  "percent": 40.0
+                },
+                "1": {
+                  "count": 15,
+                  "percent": 27.3
+                },
+                "2": {
+                  "count": 11,
+                  "percent": 20.0
+                },
+                "3": {
+                  "count": 7,
+                  "percent": 12.7
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 4,
+                  "percent": 7.3
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 3.6
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 9.1
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 16.4
+                },
+                "4": {
+                  "count": 19,
+                  "percent": 34.5
+                },
+                "5": {
+                  "count": 16,
+                  "percent": 29.1
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 34,
+                  "percent": 61.8
+                },
+                "1": {
+                  "count": 12,
+                  "percent": 21.8
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 12.7
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 3.6
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 22,
+                  "percent": 40.0
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 5.5
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 3.6
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 16.4
+                },
+                "4": {
+                  "count": 5,
+                  "percent": 9.1
+                },
+                "5": {
+                  "count": 14,
+                  "percent": 25.5
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 12,
+                  "percent": 21.8
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 5.5
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 12.7
+                },
+                "3": {
+                  "count": 11,
+                  "percent": 20.0
+                },
+                "4": {
+                  "count": 15,
+                  "percent": 27.3
+                },
+                "5": {
+                  "count": 7,
+                  "percent": 12.7
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 29,
+                  "percent": 52.7
+                },
+                "1": {
+                  "count": 13,
+                  "percent": 23.6
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 12.7
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.3
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 3.6
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 14,
+                  "percent": 25.5
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 10.9
+                },
+                "2": {
+                  "count": 6,
+                  "percent": 10.9
+                },
+                "3": {
+                  "count": 16,
+                  "percent": 29.1
+                },
+                "4": {
+                  "count": 11,
+                  "percent": 20.0
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 3.6
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 15,
+                  "percent": 27.3
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 10.9
+                },
+                "2": {
+                  "count": 10,
+                  "percent": 18.2
+                },
+                "3": {
+                  "count": 13,
+                  "percent": 23.6
+                },
+                "4": {
+                  "count": 7,
+                  "percent": 12.7
+                },
+                "5": {
+                  "count": 4,
+                  "percent": 7.3
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 47,
+                  "percent": 85.5
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 9.1
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 1.8
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 1.8
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 1.8
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                4
+              ],
+              "Sourness": [],
+              "Saltiness": [
+                0
+              ],
+              "Bitterness": [
+                3
+              ],
+              "Savoriness": [],
+              "Fatness": [],
+              "Astringency": [
+                5
+              ],
+              "Aromaticity": [],
+              "Texture": [],
+              "Piquancy": [
+                3,
+                4,
+                5
+              ]
+            }
+          }
+        }
+      ],
+      "practiceTrials": [
+        {
+          "id": "part1-practice-1",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "practice",
+          "chartType": "grouped_bar",
+          "taskType": "highest_mean",
+          "prompt": "Which taste dimension has the highest mean rating for this food?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Fatty",
+          "stimulus": {
+            "foodName": "Avocado",
+            "count": 18,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.72,
+              "Sourness": 0.11,
+              "Saltiness": 0.22,
+              "Bitterness": 0.33,
+              "Savoriness": 1.06,
+              "Fatness": 4.28,
+              "Astringency": 0.0,
+              "Aromaticity": 1.28,
+              "Texture": 0.56,
+              "Piquancy": 0.0
+            },
+            "stdevs": {
+              "Sweetness": 0.73,
+              "Sourness": 0.31,
+              "Saltiness": 0.53,
+              "Bitterness": 0.47,
+              "Savoriness": 1.27,
+              "Fatness": 1.15,
+              "Astringency": 0.0,
+              "Aromaticity": 1.15,
+              "Texture": 1.01,
+              "Piquancy": 0.0
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 8,
+                  "percent": 44.4
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 38.9
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 16.7
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 16,
+                  "percent": 88.9
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 15,
+                  "percent": 83.3
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 12,
+                  "percent": 66.7
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 33.3
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 8,
+                  "percent": 44.4
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 22.2
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 27.8
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 5.6
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 8,
+                  "percent": 44.4
+                },
+                "5": {
+                  "count": 9,
+                  "percent": 50.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 18,
+                  "percent": 100.0
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 7,
+                  "percent": 38.9
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "2": {
+                  "count": 6,
+                  "percent": 33.3
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 16.7
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 12,
+                  "percent": 66.7
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 22.2
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 18,
+                  "percent": 100.0
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [],
+              "Sourness": [
+                1
+              ],
+              "Saltiness": [
+                2
+              ],
+              "Bitterness": [],
+              "Savoriness": [
+                5
+              ],
+              "Fatness": [
+                0
+              ],
+              "Astringency": [],
+              "Aromaticity": [],
+              "Texture": [
+                4
+              ],
+              "Piquancy": []
+            }
+          },
+          "difficulty": "easy",
+          "clarityMargin": 3.0
+        },
+        {
+          "id": "part1-practice-2",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "practice",
+          "chartType": "violin_plot",
+          "taskType": "highest_variability",
+          "prompt": "Which attribute shows the greatest variability in ratings?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Bitter",
+          "stimulus": {
+            "foodName": "Tonic Water",
+            "count": 51,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.49,
+              "Sourness": 1.04,
+              "Saltiness": 0.49,
+              "Bitterness": 2.71,
+              "Savoriness": 0.27,
+              "Fatness": 0.12,
+              "Astringency": 1.29,
+              "Aromaticity": 1.08,
+              "Texture": 0.53,
+              "Piquancy": 0.2
+            },
+            "stdevs": {
+              "Sweetness": 0.92,
+              "Sourness": 1.15,
+              "Saltiness": 0.94,
+              "Bitterness": 1.86,
+              "Savoriness": 0.69,
+              "Fatness": 0.47,
+              "Astringency": 1.24,
+              "Aromaticity": 1.17,
+              "Texture": 1.07,
+              "Piquancy": 0.56
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 37,
+                  "percent": 72.5
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 13.7
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.8
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 25,
+                  "percent": 49.0
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 13.7
+                },
+                "2": {
+                  "count": 11,
+                  "percent": 21.6
+                },
+                "3": {
+                  "count": 8,
+                  "percent": 15.7
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 39,
+                  "percent": 76.5
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 3.9
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 13.7
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 13,
+                  "percent": 25.5
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "3": {
+                  "count": 7,
+                  "percent": 13.7
+                },
+                "4": {
+                  "count": 17,
+                  "percent": 33.3
+                },
+                "5": {
+                  "count": 8,
+                  "percent": 15.7
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 42,
+                  "percent": 82.4
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 11.8
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 3.9
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 47,
+                  "percent": 92.2
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 21,
+                  "percent": 41.2
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 7.8
+                },
+                "2": {
+                  "count": 19,
+                  "percent": 37.3
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.8
+                },
+                "4": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 24,
+                  "percent": 47.1
+                },
+                "1": {
+                  "count": 8,
+                  "percent": 15.7
+                },
+                "2": {
+                  "count": 10,
+                  "percent": 19.6
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 17.6
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 34,
+                  "percent": 66.7
+                },
+                "1": {
+                  "count": 14,
+                  "percent": 27.5
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 3.9
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 44,
+                  "percent": 86.3
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 9.8
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                3
+              ],
+              "Sourness": [],
+              "Saltiness": [
+                3
+              ],
+              "Bitterness": [],
+              "Savoriness": [
+                2,
+                3
+              ],
+              "Fatness": [
+                3
+              ],
+              "Astringency": [
+                4
+              ],
+              "Aromaticity": [],
+              "Texture": [
+                3,
+                5
+              ],
+              "Piquancy": [
+                2,
+                3
+              ]
+            }
+          },
+          "difficulty": "easy",
+          "clarityMargin": 0.62
+        },
+        {
+          "id": "part1-practice-3",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "practice",
+          "chartType": "outlier_radar",
+          "taskType": "highest_mean",
+          "prompt": "Which taste dimension has the highest mean rating for this food?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Salty",
+          "stimulus": {
+            "foodName": "Soy Sauce",
+            "count": 51,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.71,
+              "Sourness": 1.55,
+              "Saltiness": 2.86,
+              "Bitterness": 0.8,
+              "Savoriness": 2.25,
+              "Fatness": 0.35,
+              "Astringency": 1.14,
+              "Aromaticity": 1.76,
+              "Texture": 0.41,
+              "Piquancy": 0.49
+            },
+            "stdevs": {
+              "Sweetness": 0.89,
+              "Sourness": 1.39,
+              "Saltiness": 2.19,
+              "Bitterness": 1.09,
+              "Savoriness": 2.07,
+              "Fatness": 0.65,
+              "Astringency": 1.19,
+              "Aromaticity": 1.45,
+              "Texture": 0.87,
+              "Piquancy": 0.8
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 26,
+                  "percent": 51.0
+                },
+                "1": {
+                  "count": 18,
+                  "percent": 35.3
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.8
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 16,
+                  "percent": 31.4
+                },
+                "1": {
+                  "count": 10,
+                  "percent": 19.6
+                },
+                "2": {
+                  "count": 12,
+                  "percent": 23.5
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 17.6
+                },
+                "4": {
+                  "count": 2,
+                  "percent": 3.9
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 3.9
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 15,
+                  "percent": 29.4
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 7.8
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 3.9
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 7.8
+                },
+                "4": {
+                  "count": 4,
+                  "percent": 7.8
+                },
+                "5": {
+                  "count": 22,
+                  "percent": 43.1
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 26,
+                  "percent": 51.0
+                },
+                "1": {
+                  "count": 16,
+                  "percent": 31.4
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 9.8
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "4": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 18,
+                  "percent": 35.3
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 9.8
+                },
+                "2": {
+                  "count": 6,
+                  "percent": 11.8
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "4": {
+                  "count": 6,
+                  "percent": 11.8
+                },
+                "5": {
+                  "count": 13,
+                  "percent": 25.5
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 37,
+                  "percent": 72.5
+                },
+                "1": {
+                  "count": 11,
+                  "percent": 21.6
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 3.9
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 18,
+                  "percent": 35.3
+                },
+                "1": {
+                  "count": 18,
+                  "percent": 35.3
+                },
+                "2": {
+                  "count": 9,
+                  "percent": 17.6
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 5.9
+                },
+                "4": {
+                  "count": 2,
+                  "percent": 3.9
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.0
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 15,
+                  "percent": 29.4
+                },
+                "1": {
+                  "count": 9,
+                  "percent": 17.6
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 13.7
+                },
+                "3": {
+                  "count": 13,
+                  "percent": 25.5
+                },
+                "4": {
+                  "count": 7,
+                  "percent": 13.7
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 38,
+                  "percent": 74.5
+                },
+                "1": {
+                  "count": 9,
+                  "percent": 17.6
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 3.9
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 35,
+                  "percent": 68.6
+                },
+                "1": {
+                  "count": 8,
+                  "percent": 15.7
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 13.7
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                3
+              ],
+              "Sourness": [
+                5
+              ],
+              "Saltiness": [],
+              "Bitterness": [
+                3,
+                4
+              ],
+              "Savoriness": [],
+              "Fatness": [
+                2,
+                3
+              ],
+              "Astringency": [
+                4,
+                5
+              ],
+              "Aromaticity": [],
+              "Texture": [
+                3,
+                4
+              ],
+              "Piquancy": [
+                3
+              ]
+            }
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.61
+        }
+      ],
+      "realTrials": [
+        {
+          "id": "part1-real-1",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "real",
+          "chartType": "grouped_bar",
+          "taskType": "highest_mean",
+          "prompt": "Which taste dimension has the highest mean rating for this food?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Texture",
+          "stimulus": {
+            "foodName": "Almonds",
+            "count": 25,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 1.04,
+              "Sourness": 0.16,
+              "Saltiness": 0.76,
+              "Bitterness": 0.92,
+              "Savoriness": 0.76,
+              "Fatness": 3.04,
+              "Astringency": 1.08,
+              "Aromaticity": 1.16,
+              "Texture": 4.08,
+              "Piquancy": 0.32
+            },
+            "stdevs": {
+              "Sweetness": 1.0,
+              "Sourness": 0.61,
+              "Saltiness": 0.99,
+              "Bitterness": 1.26,
+              "Savoriness": 1.3,
+              "Fatness": 1.46,
+              "Astringency": 1.2,
+              "Aromaticity": 1.08,
+              "Texture": 1.38,
+              "Piquancy": 1.12
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 9,
+                  "percent": 36.0
+                },
+                "1": {
+                  "count": 9,
+                  "percent": 36.0
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 16.0
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 12.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 23,
+                  "percent": 92.0
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 4.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 4.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 13,
+                  "percent": 52.0
+                },
+                "1": {
+                  "count": 8,
+                  "percent": 32.0
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 4.0
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 12.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 13,
+                  "percent": 52.0
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 24.0
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 12.0
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 8.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 15,
+                  "percent": 60.0
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 28.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 4.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 4.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.0
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 2,
+                  "percent": 8.0
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 8.0
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 12.0
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 36.0
+                },
+                "4": {
+                  "count": 4,
+                  "percent": 16.0
+                },
+                "5": {
+                  "count": 5,
+                  "percent": 20.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 12,
+                  "percent": 48.0
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 16.0
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 16.0
+                },
+                "3": {
+                  "count": 5,
+                  "percent": 20.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 9,
+                  "percent": 36.0
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 28.0
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 20.0
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 16.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 2,
+                  "percent": 8.0
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 12.0
+                },
+                "4": {
+                  "count": 7,
+                  "percent": 28.0
+                },
+                "5": {
+                  "count": 13,
+                  "percent": 52.0
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 23,
+                  "percent": 92.0
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 4.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [],
+              "Sourness": [
+                3
+              ],
+              "Saltiness": [
+                3
+              ],
+              "Bitterness": [
+                5
+              ],
+              "Savoriness": [
+                4,
+                5
+              ],
+              "Fatness": [
+                0
+              ],
+              "Astringency": [],
+              "Aromaticity": [],
+              "Texture": [
+                0
+              ],
+              "Piquancy": [
+                3,
+                5
+              ]
+            }
+          },
+          "difficulty": "easy",
+          "clarityMargin": 1.04
+        },
+        {
+          "id": "part1-real-2",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "real",
+          "chartType": "outlier_radar",
+          "taskType": "highest_mean",
+          "prompt": "Which taste dimension has the highest mean rating for this food?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Salty",
+          "stimulus": {
+            "foodName": "French Fries",
+            "count": 46,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.72,
+              "Sourness": 0.52,
+              "Saltiness": 3.46,
+              "Bitterness": 0.17,
+              "Savoriness": 1.17,
+              "Fatness": 3.2,
+              "Astringency": 0.59,
+              "Aromaticity": 1.5,
+              "Texture": 2.67,
+              "Piquancy": 0.59
+            },
+            "stdevs": {
+              "Sweetness": 0.92,
+              "Sourness": 1.16,
+              "Saltiness": 1.26,
+              "Bitterness": 0.56,
+              "Savoriness": 1.34,
+              "Fatness": 1.84,
+              "Astringency": 0.92,
+              "Aromaticity": 1.41,
+              "Texture": 1.76,
+              "Piquancy": 1.23
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 24,
+                  "percent": 52.2
+                },
+                "1": {
+                  "count": 15,
+                  "percent": 32.6
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 6.5
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 8.7
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 36,
+                  "percent": 78.3
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 6.5
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 6.5
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 4.3
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.2
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.2
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 3,
+                  "percent": 6.5
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 6.5
+                },
+                "3": {
+                  "count": 17,
+                  "percent": 37.0
+                },
+                "4": {
+                  "count": 13,
+                  "percent": 28.3
+                },
+                "5": {
+                  "count": 10,
+                  "percent": 21.7
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 41,
+                  "percent": 89.1
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 6.5
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.2
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.2
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 22,
+                  "percent": 47.8
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 10.9
+                },
+                "2": {
+                  "count": 12,
+                  "percent": 26.1
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 8.7
+                },
+                "4": {
+                  "count": 2,
+                  "percent": 4.3
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.2
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 9,
+                  "percent": 19.6
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 8.7
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 19.6
+                },
+                "4": {
+                  "count": 8,
+                  "percent": 17.4
+                },
+                "5": {
+                  "count": 16,
+                  "percent": 34.8
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 30,
+                  "percent": 65.2
+                },
+                "1": {
+                  "count": 8,
+                  "percent": 17.4
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 10.9
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 6.5
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 18,
+                  "percent": 39.1
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 10.9
+                },
+                "2": {
+                  "count": 8,
+                  "percent": 17.4
+                },
+                "3": {
+                  "count": 13,
+                  "percent": 28.3
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.2
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.2
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 10,
+                  "percent": 21.7
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 8.7
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 4.3
+                },
+                "3": {
+                  "count": 12,
+                  "percent": 26.1
+                },
+                "4": {
+                  "count": 11,
+                  "percent": 23.9
+                },
+                "5": {
+                  "count": 7,
+                  "percent": 15.2
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 34,
+                  "percent": 73.9
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 10.9
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 6.5
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 4.3
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 4.3
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                3
+              ],
+              "Sourness": [
+                3,
+                4,
+                5
+              ],
+              "Saltiness": [
+                0
+              ],
+              "Bitterness": [
+                2,
+                3
+              ],
+              "Savoriness": [
+                4,
+                5
+              ],
+              "Fatness": [],
+              "Astringency": [
+                3
+              ],
+              "Aromaticity": [
+                5
+              ],
+              "Texture": [],
+              "Piquancy": [
+                5
+              ]
+            }
+          },
+          "difficulty": "hard",
+          "clarityMargin": 0.26
+        },
+        {
+          "id": "part1-real-3",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "real",
+          "chartType": "violin_plot",
+          "taskType": "highest_variability",
+          "prompt": "Which attribute shows the greatest variability in ratings?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Texture",
+          "stimulus": {
+            "foodName": "Pickles",
+            "count": 27,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.37,
+              "Sourness": 3.7,
+              "Saltiness": 2.63,
+              "Bitterness": 0.7,
+              "Savoriness": 0.7,
+              "Fatness": 0.37,
+              "Astringency": 1.44,
+              "Aromaticity": 1.67,
+              "Texture": 2.19,
+              "Piquancy": 0.7
+            },
+            "stdevs": {
+              "Sweetness": 0.82,
+              "Sourness": 0.94,
+              "Saltiness": 1.52,
+              "Bitterness": 1.08,
+              "Savoriness": 1.12,
+              "Fatness": 0.82,
+              "Astringency": 1.47,
+              "Aromaticity": 1.41,
+              "Texture": 2.14,
+              "Piquancy": 1.08
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 21,
+                  "percent": 77.8
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 14.8
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "3": {
+                  "count": 5,
+                  "percent": 18.5
+                },
+                "4": {
+                  "count": 15,
+                  "percent": 55.6
+                },
+                "5": {
+                  "count": 4,
+                  "percent": 14.8
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 5,
+                  "percent": 18.5
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "3": {
+                  "count": 10,
+                  "percent": 37.0
+                },
+                "4": {
+                  "count": 8,
+                  "percent": 29.6
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 3.7
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 16,
+                  "percent": 59.3
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 25.9
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 17,
+                  "percent": 63.0
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 18.5
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 22,
+                  "percent": 81.5
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 11.1
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 11,
+                  "percent": 40.7
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 11.1
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 25.9
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 11.1
+                },
+                "4": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 3.7
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 9,
+                  "percent": 33.3
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 11.1
+                },
+                "2": {
+                  "count": 6,
+                  "percent": 22.2
+                },
+                "3": {
+                  "count": 6,
+                  "percent": 22.2
+                },
+                "4": {
+                  "count": 3,
+                  "percent": 11.1
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 11,
+                  "percent": 40.7
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 11.1
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "5": {
+                  "count": 8,
+                  "percent": 29.6
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 16,
+                  "percent": 59.3
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 25.9
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 7.4
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 3.7
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                3
+              ],
+              "Sourness": [
+                1
+              ],
+              "Saltiness": [],
+              "Bitterness": [
+                3,
+                4
+              ],
+              "Savoriness": [
+                3,
+                4
+              ],
+              "Fatness": [
+                3
+              ],
+              "Astringency": [
+                5
+              ],
+              "Aromaticity": [],
+              "Texture": [],
+              "Piquancy": [
+                3,
+                4
+              ]
+            }
+          },
+          "difficulty": "easy",
+          "clarityMargin": 0.62
+        },
+        {
+          "id": "part1-real-4",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "real",
+          "chartType": "outlier_radar",
+          "taskType": "highest_variability",
+          "prompt": "Which attribute shows the greatest variability in ratings?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Astringent",
+          "stimulus": {
+            "foodName": "Black Tea",
+            "count": 40,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.53,
+              "Sourness": 0.55,
+              "Saltiness": 0.33,
+              "Bitterness": 2.15,
+              "Savoriness": 0.38,
+              "Fatness": 0.15,
+              "Astringency": 3.1,
+              "Aromaticity": 2.27,
+              "Texture": 0.4,
+              "Piquancy": 0.45
+            },
+            "stdevs": {
+              "Sweetness": 1.02,
+              "Sourness": 1.09,
+              "Saltiness": 0.93,
+              "Bitterness": 1.56,
+              "Savoriness": 1.04,
+              "Fatness": 0.79,
+              "Astringency": 1.74,
+              "Aromaticity": 1.47,
+              "Texture": 0.97,
+              "Piquancy": 1.24
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 28,
+                  "percent": 70.0
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 17.5
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 7.5
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.5
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.5
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 29,
+                  "percent": 72.5
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 12.5
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 7.5
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 5.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.5
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 34,
+                  "percent": 85.0
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 5.0
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 7.5
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.5
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 10,
+                  "percent": 25.0
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 7.5
+                },
+                "2": {
+                  "count": 8,
+                  "percent": 20.0
+                },
+                "3": {
+                  "count": 12,
+                  "percent": 30.0
+                },
+                "4": {
+                  "count": 4,
+                  "percent": 10.0
+                },
+                "5": {
+                  "count": 3,
+                  "percent": 7.5
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 33,
+                  "percent": 82.5
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 10.0
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.5
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.5
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.5
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 38,
+                  "percent": 95.0
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 2.5
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.5
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 5,
+                  "percent": 12.5
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 5.0
+                },
+                "2": {
+                  "count": 10,
+                  "percent": 25.0
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 7.5
+                },
+                "4": {
+                  "count": 7,
+                  "percent": 17.5
+                },
+                "5": {
+                  "count": 13,
+                  "percent": 32.5
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 9,
+                  "percent": 22.5
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 2.5
+                },
+                "2": {
+                  "count": 9,
+                  "percent": 22.5
+                },
+                "3": {
+                  "count": 14,
+                  "percent": 35.0
+                },
+                "4": {
+                  "count": 5,
+                  "percent": 12.5
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 5.0
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 31,
+                  "percent": 77.5
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 15.0
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.5
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.5
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.5
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 33,
+                  "percent": 82.5
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 10.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.5
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 5.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                3,
+                5
+              ],
+              "Sourness": [
+                3,
+                5
+              ],
+              "Saltiness": [
+                5
+              ],
+              "Bitterness": [],
+              "Savoriness": [
+                4,
+                5
+              ],
+              "Fatness": [
+                5
+              ],
+              "Astringency": [],
+              "Aromaticity": [],
+              "Texture": [
+                3,
+                5
+              ],
+              "Piquancy": [
+                4,
+                5
+              ]
+            }
+          },
+          "difficulty": "hard",
+          "clarityMargin": 0.18
+        },
+        {
+          "id": "part1-real-5",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "real",
+          "chartType": "grouped_bar",
+          "taskType": "highest_mean",
+          "prompt": "Which taste dimension has the highest mean rating for this food?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Salty",
+          "stimulus": {
+            "foodName": "Potato Chips",
+            "count": 42,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.55,
+              "Sourness": 0.31,
+              "Saltiness": 3.79,
+              "Bitterness": 0.26,
+              "Savoriness": 0.9,
+              "Fatness": 2.62,
+              "Astringency": 0.52,
+              "Aromaticity": 1.57,
+              "Texture": 3.31,
+              "Piquancy": 0.57
+            },
+            "stdevs": {
+              "Sweetness": 0.7,
+              "Sourness": 0.71,
+              "Saltiness": 1.17,
+              "Bitterness": 0.66,
+              "Savoriness": 1.11,
+              "Fatness": 1.81,
+              "Astringency": 0.96,
+              "Aromaticity": 1.33,
+              "Texture": 2.05,
+              "Piquancy": 1.14
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 23,
+                  "percent": 54.8
+                },
+                "1": {
+                  "count": 16,
+                  "percent": 38.1
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 4.8
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 34,
+                  "percent": 81.0
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 9.5
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 7.1
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 7.1
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "3": {
+                  "count": 13,
+                  "percent": 31.0
+                },
+                "4": {
+                  "count": 10,
+                  "percent": 23.8
+                },
+                "5": {
+                  "count": 15,
+                  "percent": 35.7
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 35,
+                  "percent": 83.3
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 9.5
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 4.8
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 22,
+                  "percent": 52.4
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 16.7
+                },
+                "2": {
+                  "count": 9,
+                  "percent": 21.4
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 7.1
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 9,
+                  "percent": 21.4
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 9.5
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 11.9
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 21.4
+                },
+                "4": {
+                  "count": 6,
+                  "percent": 14.3
+                },
+                "5": {
+                  "count": 9,
+                  "percent": 21.4
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 30,
+                  "percent": 71.4
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 14.3
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 4.8
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 9.5
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 15,
+                  "percent": 35.7
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 9.5
+                },
+                "2": {
+                  "count": 8,
+                  "percent": 19.0
+                },
+                "3": {
+                  "count": 14,
+                  "percent": 33.3
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 8,
+                  "percent": 19.0
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 7.1
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 9.5
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 7.1
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "5": {
+                  "count": 23,
+                  "percent": 54.8
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 30,
+                  "percent": 71.4
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 14.3
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 7.1
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.4
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                2,
+                3
+              ],
+              "Sourness": [
+                2,
+                3
+              ],
+              "Saltiness": [
+                1
+              ],
+              "Bitterness": [
+                2,
+                3
+              ],
+              "Savoriness": [
+                4
+              ],
+              "Fatness": [],
+              "Astringency": [
+                3
+              ],
+              "Aromaticity": [],
+              "Texture": [],
+              "Piquancy": [
+                3,
+                4,
+                5
+              ]
+            }
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.48
+        },
+        {
+          "id": "part1-real-6",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "real",
+          "chartType": "outlier_radar",
+          "taskType": "highest_mean",
+          "prompt": "Which taste dimension has the highest mean rating for this food?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Sweet",
+          "stimulus": {
+            "foodName": "Sweet Potato",
+            "count": 18,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 2.78,
+              "Sourness": 0.28,
+              "Saltiness": 0.89,
+              "Bitterness": 0.5,
+              "Savoriness": 1.22,
+              "Fatness": 1.44,
+              "Astringency": 0.56,
+              "Aromaticity": 1.56,
+              "Texture": 1.5,
+              "Piquancy": 0.56
+            },
+            "stdevs": {
+              "Sweetness": 1.13,
+              "Sourness": 0.56,
+              "Saltiness": 1.24,
+              "Bitterness": 1.07,
+              "Savoriness": 1.23,
+              "Fatness": 1.17,
+              "Astringency": 1.01,
+              "Aromaticity": 1.42,
+              "Texture": 0.96,
+              "Piquancy": 1.01
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "3": {
+                  "count": 8,
+                  "percent": 44.4
+                },
+                "4": {
+                  "count": 5,
+                  "percent": 27.8
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 14,
+                  "percent": 77.8
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 16.7
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 8,
+                  "percent": 44.4
+                },
+                "1": {
+                  "count": 8,
+                  "percent": 44.4
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 5.6
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 14,
+                  "percent": 77.8
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 6,
+                  "percent": 33.3
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 38.9
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 16.7
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 4,
+                  "percent": 22.2
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 38.9
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 16.7
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 16.7
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 13,
+                  "percent": 72.2
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 6,
+                  "percent": 33.3
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 22.2
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 22.2
+                },
+                "4": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 3,
+                  "percent": 16.7
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 33.3
+                },
+                "2": {
+                  "count": 6,
+                  "percent": 33.3
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 16.7
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 13,
+                  "percent": 72.2
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 5.6
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 11.1
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                0
+              ],
+              "Sourness": [
+                2
+              ],
+              "Saltiness": [
+                5
+              ],
+              "Bitterness": [
+                4
+              ],
+              "Savoriness": [
+                4
+              ],
+              "Fatness": [
+                4
+              ],
+              "Astringency": [
+                3
+              ],
+              "Aromaticity": [],
+              "Texture": [],
+              "Piquancy": [
+                3
+              ]
+            }
+          },
+          "difficulty": "easy",
+          "clarityMargin": 1.22
+        },
+        {
+          "id": "part1-real-7",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "real",
+          "chartType": "violin_plot",
+          "taskType": "highest_variability",
+          "prompt": "Which attribute shows the greatest variability in ratings?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Savory",
+          "stimulus": {
+            "foodName": "Salami",
+            "count": 24,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 0.62,
+              "Sourness": 1.25,
+              "Saltiness": 3.62,
+              "Bitterness": 0.71,
+              "Savoriness": 3.71,
+              "Fatness": 3.46,
+              "Astringency": 0.79,
+              "Aromaticity": 2.21,
+              "Texture": 2.58,
+              "Piquancy": 1.12
+            },
+            "stdevs": {
+              "Sweetness": 1.07,
+              "Sourness": 1.51,
+              "Saltiness": 1.58,
+              "Bitterness": 1.17,
+              "Savoriness": 1.72,
+              "Fatness": 1.55,
+              "Astringency": 1.19,
+              "Aromaticity": 1.58,
+              "Texture": 1.26,
+              "Piquancy": 1.45
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 14,
+                  "percent": 58.3
+                },
+                "1": {
+                  "count": 8,
+                  "percent": 33.3
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 4.2
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.2
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 10,
+                  "percent": 41.7
+                },
+                "1": {
+                  "count": 6,
+                  "percent": 25.0
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 20.8
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 4.2
+                },
+                "5": {
+                  "count": 2,
+                  "percent": 8.3
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 3,
+                  "percent": 12.5
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "3": {
+                  "count": 6,
+                  "percent": 25.0
+                },
+                "4": {
+                  "count": 6,
+                  "percent": 25.0
+                },
+                "5": {
+                  "count": 9,
+                  "percent": 37.5
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 14,
+                  "percent": 58.3
+                },
+                "1": {
+                  "count": 7,
+                  "percent": 29.2
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 4.2
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 4.2
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.2
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 3,
+                  "percent": 12.5
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 4.2
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 4.2
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 4.2
+                },
+                "4": {
+                  "count": 7,
+                  "percent": 29.2
+                },
+                "5": {
+                  "count": 11,
+                  "percent": 45.8
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 3,
+                  "percent": 12.5
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 8.3
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 12.5
+                },
+                "4": {
+                  "count": 10,
+                  "percent": 41.7
+                },
+                "5": {
+                  "count": 6,
+                  "percent": 25.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 14,
+                  "percent": 58.3
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 16.7
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 20.8
+                },
+                "3": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.2
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 6,
+                  "percent": 25.0
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 8.3
+                },
+                "2": {
+                  "count": 4,
+                  "percent": 16.7
+                },
+                "3": {
+                  "count": 6,
+                  "percent": 25.0
+                },
+                "4": {
+                  "count": 5,
+                  "percent": 20.8
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.2
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 3,
+                  "percent": 12.5
+                },
+                "1": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 29.2
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 37.5
+                },
+                "4": {
+                  "count": 4,
+                  "percent": 16.7
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.2
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 13,
+                  "percent": 54.2
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 8.3
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 20.8
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 8.3
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 4.2
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 4.2
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                5
+              ],
+              "Sourness": [
+                5
+              ],
+              "Saltiness": [
+                0
+              ],
+              "Bitterness": [
+                5
+              ],
+              "Savoriness": [
+                0
+              ],
+              "Fatness": [
+                0
+              ],
+              "Astringency": [
+                5
+              ],
+              "Aromaticity": [],
+              "Texture": [
+                0
+              ],
+              "Piquancy": [
+                5
+              ]
+            }
+          },
+          "difficulty": "hard",
+          "clarityMargin": 0.14
+        },
+        {
+          "id": "part1-real-8",
+          "blockId": "part1",
+          "partId": "part1",
+          "kind": "real",
+          "chartType": "outlier_radar",
+          "taskType": "highest_variability",
+          "prompt": "Which attribute shows the greatest variability in ratings?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Aromatic",
+          "stimulus": {
+            "foodName": "Orange Juice",
+            "count": 41,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "meanValues": {
+              "Sweetness": 3.05,
+              "Sourness": 3.0,
+              "Saltiness": 0.76,
+              "Bitterness": 0.59,
+              "Savoriness": 0.34,
+              "Fatness": 0.2,
+              "Astringency": 1.05,
+              "Aromaticity": 2.39,
+              "Texture": 0.63,
+              "Piquancy": 0.24
+            },
+            "stdevs": {
+              "Sweetness": 1.4,
+              "Sourness": 1.31,
+              "Saltiness": 1.01,
+              "Bitterness": 0.96,
+              "Savoriness": 0.72,
+              "Fatness": 0.59,
+              "Astringency": 1.27,
+              "Aromaticity": 1.51,
+              "Texture": 0.9,
+              "Piquancy": 0.73
+            },
+            "distribution": {
+              "Sweetness": {
+                "0": {
+                  "count": 4,
+                  "percent": 9.8
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 17.1
+                },
+                "3": {
+                  "count": 11,
+                  "percent": 26.8
+                },
+                "4": {
+                  "count": 13,
+                  "percent": 31.7
+                },
+                "5": {
+                  "count": 5,
+                  "percent": 12.2
+                }
+              },
+              "Sourness": {
+                "0": {
+                  "count": 4,
+                  "percent": 9.8
+                },
+                "1": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "2": {
+                  "count": 7,
+                  "percent": 17.1
+                },
+                "3": {
+                  "count": 9,
+                  "percent": 22.0
+                },
+                "4": {
+                  "count": 19,
+                  "percent": 46.3
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.4
+                }
+              },
+              "Saltiness": {
+                "0": {
+                  "count": 23,
+                  "percent": 56.1
+                },
+                "1": {
+                  "count": 9,
+                  "percent": 22.0
+                },
+                "2": {
+                  "count": 5,
+                  "percent": 12.2
+                },
+                "3": {
+                  "count": 4,
+                  "percent": 9.8
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Bitterness": {
+                "0": {
+                  "count": 26,
+                  "percent": 63.4
+                },
+                "1": {
+                  "count": 10,
+                  "percent": 24.4
+                },
+                "2": {
+                  "count": 2,
+                  "percent": 4.9
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 4.9
+                },
+                "4": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Savoriness": {
+                "0": {
+                  "count": 32,
+                  "percent": 78.0
+                },
+                "1": {
+                  "count": 5,
+                  "percent": 12.2
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 7.3
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Fatness": {
+                "0": {
+                  "count": 36,
+                  "percent": 87.8
+                },
+                "1": {
+                  "count": 3,
+                  "percent": 7.3
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "3": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Astringency": {
+                "0": {
+                  "count": 17,
+                  "percent": 41.5
+                },
+                "1": {
+                  "count": 15,
+                  "percent": 36.6
+                },
+                "2": {
+                  "count": 3,
+                  "percent": 7.3
+                },
+                "3": {
+                  "count": 3,
+                  "percent": 7.3
+                },
+                "4": {
+                  "count": 2,
+                  "percent": 4.9
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.4
+                }
+              },
+              "Aromaticity": {
+                "0": {
+                  "count": 8,
+                  "percent": 19.5
+                },
+                "1": {
+                  "count": 4,
+                  "percent": 9.8
+                },
+                "2": {
+                  "count": 6,
+                  "percent": 14.6
+                },
+                "3": {
+                  "count": 11,
+                  "percent": 26.8
+                },
+                "4": {
+                  "count": 11,
+                  "percent": 26.8
+                },
+                "5": {
+                  "count": 1,
+                  "percent": 2.4
+                }
+              },
+              "Texture": {
+                "0": {
+                  "count": 25,
+                  "percent": 61.0
+                },
+                "1": {
+                  "count": 8,
+                  "percent": 19.5
+                },
+                "2": {
+                  "count": 6,
+                  "percent": 14.6
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 4.9
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              },
+              "Piquancy": {
+                "0": {
+                  "count": 36,
+                  "percent": 87.8
+                },
+                "1": {
+                  "count": 2,
+                  "percent": 4.9
+                },
+                "2": {
+                  "count": 1,
+                  "percent": 2.4
+                },
+                "3": {
+                  "count": 2,
+                  "percent": 4.9
+                },
+                "4": {
+                  "count": 0,
+                  "percent": 0.0
+                },
+                "5": {
+                  "count": 0,
+                  "percent": 0.0
+                }
+              }
+            },
+            "outliers": {
+              "Sweetness": [
+                0
+              ],
+              "Sourness": [
+                0
+              ],
+              "Saltiness": [
+                3
+              ],
+              "Bitterness": [
+                3,
+                4
+              ],
+              "Savoriness": [
+                2,
+                3
+              ],
+              "Fatness": [
+                2,
+                3
+              ],
+              "Astringency": [
+                4,
+                5
+              ],
+              "Aromaticity": [],
+              "Texture": [
+                3
+              ],
+              "Piquancy": [
+                2,
+                3
+              ]
+            }
+          },
+          "difficulty": "hard",
+          "clarityMargin": 0.11
+        }
+      ],
+      "subjectiveSection": {
+        "id": "part1-ratings",
+        "title": "Chart Evaluation",
+        "instructions": "Please rate each chart based on your experience in this part.",
+        "charts": [
+          {
+            "chartType": "grouped_bar",
+            "title": "Grouped Bar Chart"
+          },
+          {
+            "chartType": "violin_plot",
+            "title": "Violin Plot"
+          },
+          {
+            "chartType": "outlier_radar",
+            "title": "Distribution-Aware Radial Profile"
+          }
+        ],
+        "questions": [
+          {
+            "id": "easy_find_info",
+            "label": "This chart made it easy to identify the requested information."
+          },
+          {
+            "id": "confidence",
+            "label": "I felt confident in my answers when using this chart."
+          },
+          {
+            "id": "clear_differences",
+            "label": "This chart clearly showed differences across taste attributes."
+          },
+          {
+            "id": "visual_clutter",
+            "label": "This chart felt visually cluttered."
+          }
+        ],
+        "scaleOptions": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ]
+      }
+    },
+    {
+      "id": "part2",
+      "partId": "part2",
+      "title": "Part 2: Subgroup Comparison",
+      "intro": "This part evaluates how chart types support comparison between a subgroup and a baseline. You will identify differences across taste attributes.",
+      "taskInstruction": "Select the best answer based only on the information visible in the chart.",
+      "onboarding": [
+        {
+          "chartType": "overlaid_radar",
+          "title": "Overlaid Radar Chart",
+          "callouts": [
+            "Compare the two profiles to identify differences across attributes."
+          ]
+        },
+        {
+          "chartType": "zglyph",
+          "title": "Z-Score Radar Chart",
+          "callouts": [
+            "Direction shows above or below baseline. Larger displacement indicates larger differences."
+          ]
+        }
+      ],
+      "onboardingPreviewTrials": [
+        {
+          "id": "part2-preview-overlaid",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "preview",
+          "chartType": "overlaid_radar",
+          "taskType": "tutorial_preview",
+          "prompt": "Onboarding preview",
+          "options": [],
+          "correctAnswer": "",
+          "stimulus": {
+            "foodName": "Milk",
+            "count": 14,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 1.74,
+              "Sourness": 0.57,
+              "Saltiness": 0.39,
+              "Bitterness": 0.26,
+              "Savoriness": 0.7,
+              "Fatness": 2.87,
+              "Astringency": 0.35,
+              "Aromaticity": 1.78,
+              "Texture": 0.43,
+              "Piquancy": 0.09
+            },
+            "baselineStDev": {
+              "Sweetness": 1.22,
+              "Sourness": 1.1,
+              "Saltiness": 0.77,
+              "Bitterness": 0.53,
+              "Savoriness": 0.8,
+              "Fatness": 1.36,
+              "Astringency": 0.76,
+              "Aromaticity": 1.06,
+              "Texture": 0.82,
+              "Piquancy": 0.41
+            },
+            "compareMean": {
+              "Sweetness": 1.57,
+              "Sourness": 0.29,
+              "Saltiness": 0.14,
+              "Bitterness": 0.21,
+              "Savoriness": 0.71,
+              "Fatness": 3.36,
+              "Astringency": 0.14,
+              "Aromaticity": 1.86,
+              "Texture": 0.21,
+              "Piquancy": 0.14
+            },
+            "subgroupLabel": "Male participants"
+          }
+        },
+        {
+          "id": "part2-preview-zglyph",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "preview",
+          "chartType": "zglyph",
+          "taskType": "tutorial_preview",
+          "prompt": "Onboarding preview",
+          "options": [],
+          "correctAnswer": "",
+          "stimulus": {
+            "foodName": "Dark Coffee",
+            "count": 12,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 0.44,
+              "Sourness": 0.86,
+              "Saltiness": 0.3,
+              "Bitterness": 3.86,
+              "Savoriness": 0.49,
+              "Fatness": 0.3,
+              "Astringency": 1.98,
+              "Aromaticity": 3.14,
+              "Texture": 0.54,
+              "Piquancy": 0.3
+            },
+            "baselineStDev": {
+              "Sweetness": 0.9,
+              "Sourness": 1.18,
+              "Saltiness": 0.77,
+              "Bitterness": 1.52,
+              "Savoriness": 0.86,
+              "Fatness": 0.65,
+              "Astringency": 1.59,
+              "Aromaticity": 1.72,
+              "Texture": 0.96,
+              "Piquancy": 0.92
+            },
+            "compareMean": {
+              "Sweetness": 0.42,
+              "Sourness": 1.75,
+              "Saltiness": 0.83,
+              "Bitterness": 4.08,
+              "Savoriness": 0.83,
+              "Fatness": 0.5,
+              "Astringency": 2.25,
+              "Aromaticity": 3.17,
+              "Texture": 0.5,
+              "Piquancy": 0.17
+            },
+            "subgroupLabel": "Non Hispanic White participants"
+          }
+        }
+      ],
+      "practiceTrials": [
+        {
+          "id": "part2-practice-1",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "practice",
+          "chartType": "overlaid_radar",
+          "taskType": "higher_than_baseline",
+          "prompt": "For this food, which attribute is rated higher by the subgroup than the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Aromatic",
+          "stimulus": {
+            "foodName": "Honey",
+            "count": 15,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 4.74,
+              "Sourness": 0.32,
+              "Saltiness": 0.29,
+              "Bitterness": 0.15,
+              "Savoriness": 0.12,
+              "Fatness": 0.97,
+              "Astringency": 0.15,
+              "Aromaticity": 2.18,
+              "Texture": 0.44,
+              "Piquancy": 0.09
+            },
+            "baselineStDev": {
+              "Sweetness": 0.5,
+              "Sourness": 0.76,
+              "Saltiness": 0.67,
+              "Bitterness": 0.55,
+              "Savoriness": 0.53,
+              "Fatness": 1.22,
+              "Astringency": 0.55,
+              "Aromaticity": 1.56,
+              "Texture": 0.85,
+              "Piquancy": 0.51
+            },
+            "compareMean": {
+              "Sweetness": 4.8,
+              "Sourness": 0.07,
+              "Saltiness": 0.07,
+              "Bitterness": 0.0,
+              "Savoriness": 0.0,
+              "Fatness": 1.07,
+              "Astringency": 0.07,
+              "Aromaticity": 2.8,
+              "Texture": 0.27,
+              "Piquancy": 0.0
+            },
+            "subgroupLabel": "Indian participants"
+          },
+          "difficulty": "easy",
+          "clarityMargin": 0.52
+        },
+        {
+          "id": "part2-practice-2",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "practice",
+          "chartType": "zglyph",
+          "taskType": "largest_deviation",
+          "prompt": "For this food, which attribute differs the most between the subgroup and the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Savory",
+          "stimulus": {
+            "foodName": "Parmesan",
+            "count": 10,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 0.82,
+              "Sourness": 1.05,
+              "Saltiness": 3.55,
+              "Bitterness": 0.58,
+              "Savoriness": 2.25,
+              "Fatness": 2.64,
+              "Astringency": 0.89,
+              "Aromaticity": 2.18,
+              "Texture": 2.05,
+              "Piquancy": 0.31
+            },
+            "baselineStDev": {
+              "Sweetness": 1.1,
+              "Sourness": 1.05,
+              "Saltiness": 1.45,
+              "Bitterness": 0.85,
+              "Savoriness": 2.1,
+              "Fatness": 1.72,
+              "Astringency": 1.23,
+              "Aromaticity": 1.59,
+              "Texture": 1.61,
+              "Piquancy": 0.95
+            },
+            "compareMean": {
+              "Sweetness": 0.7,
+              "Sourness": 1.0,
+              "Saltiness": 3.5,
+              "Bitterness": 0.7,
+              "Savoriness": 1.2,
+              "Fatness": 2.1,
+              "Astringency": 1.1,
+              "Aromaticity": 2.3,
+              "Texture": 2.2,
+              "Piquancy": 0.3
+            },
+            "subgroupLabel": "Italian participants"
+          },
+          "difficulty": "easy",
+          "clarityMargin": 0.51
+        }
+      ],
+      "realTrials": [
+        {
+          "id": "part2-real-1",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "real",
+          "chartType": "overlaid_radar",
+          "taskType": "higher_than_baseline",
+          "prompt": "For this food, which attribute is rated higher by the subgroup than the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Aromatic",
+          "stimulus": {
+            "foodName": "Dark Chocolate",
+            "count": 27,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 1.69,
+              "Sourness": 0.55,
+              "Saltiness": 0.46,
+              "Bitterness": 3.45,
+              "Savoriness": 0.76,
+              "Fatness": 2.03,
+              "Astringency": 1.22,
+              "Aromaticity": 2.66,
+              "Texture": 1.7,
+              "Piquancy": 0.18
+            },
+            "baselineStDev": {
+              "Sweetness": 1.41,
+              "Sourness": 0.97,
+              "Saltiness": 0.8,
+              "Bitterness": 1.48,
+              "Savoriness": 1.21,
+              "Fatness": 1.6,
+              "Astringency": 1.54,
+              "Aromaticity": 1.72,
+              "Texture": 1.49,
+              "Piquancy": 0.79
+            },
+            "compareMean": {
+              "Sweetness": 1.67,
+              "Sourness": 0.37,
+              "Saltiness": 0.41,
+              "Bitterness": 3.96,
+              "Savoriness": 1.11,
+              "Fatness": 2.26,
+              "Astringency": 1.7,
+              "Aromaticity": 3.67,
+              "Texture": 1.52,
+              "Piquancy": 0.33
+            },
+            "subgroupLabel": "Indian participants"
+          },
+          "difficulty": "easy",
+          "clarityMargin": 0.5
+        },
+        {
+          "id": "part2-real-2",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "real",
+          "chartType": "zglyph",
+          "taskType": "higher_than_baseline",
+          "prompt": "For this food, which attribute is rated higher by the subgroup than the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Savory",
+          "stimulus": {
+            "foodName": "Avocado",
+            "count": 8,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 0.72,
+              "Sourness": 0.11,
+              "Saltiness": 0.22,
+              "Bitterness": 0.33,
+              "Savoriness": 1.06,
+              "Fatness": 4.28,
+              "Astringency": 0.0,
+              "Aromaticity": 1.28,
+              "Texture": 0.56,
+              "Piquancy": 0.0
+            },
+            "baselineStDev": {
+              "Sweetness": 0.73,
+              "Sourness": 0.31,
+              "Saltiness": 0.53,
+              "Bitterness": 0.47,
+              "Savoriness": 1.27,
+              "Fatness": 1.15,
+              "Astringency": 0.0,
+              "Aromaticity": 1.15,
+              "Texture": 1.01,
+              "Piquancy": 0.0
+            },
+            "compareMean": {
+              "Sweetness": 0.88,
+              "Sourness": 0.12,
+              "Saltiness": 0.38,
+              "Bitterness": 0.38,
+              "Savoriness": 1.75,
+              "Fatness": 4.5,
+              "Astringency": 0.0,
+              "Aromaticity": 1.25,
+              "Texture": 0.38,
+              "Piquancy": 0.0
+            },
+            "subgroupLabel": "Female participants"
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.47
+        },
+        {
+          "id": "part2-real-3",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "real",
+          "chartType": "overlaid_radar",
+          "taskType": "largest_deviation",
+          "prompt": "For this food, which attribute differs the most between the subgroup and the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Savory",
+          "stimulus": {
+            "foodName": "Soy Sauce",
+            "count": 23,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 0.71,
+              "Sourness": 1.55,
+              "Saltiness": 2.86,
+              "Bitterness": 0.8,
+              "Savoriness": 2.25,
+              "Fatness": 0.35,
+              "Astringency": 1.14,
+              "Aromaticity": 1.76,
+              "Texture": 0.41,
+              "Piquancy": 0.49
+            },
+            "baselineStDev": {
+              "Sweetness": 0.89,
+              "Sourness": 1.39,
+              "Saltiness": 2.19,
+              "Bitterness": 1.09,
+              "Savoriness": 2.07,
+              "Fatness": 0.65,
+              "Astringency": 1.19,
+              "Aromaticity": 1.45,
+              "Texture": 0.87,
+              "Piquancy": 0.8
+            },
+            "compareMean": {
+              "Sweetness": 0.78,
+              "Sourness": 1.48,
+              "Saltiness": 2.78,
+              "Bitterness": 1.04,
+              "Savoriness": 2.91,
+              "Fatness": 0.48,
+              "Astringency": 1.04,
+              "Aromaticity": 1.87,
+              "Texture": 0.35,
+              "Piquancy": 0.57
+            },
+            "subgroupLabel": "Male participants"
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.42
+        },
+        {
+          "id": "part2-real-4",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "real",
+          "chartType": "zglyph",
+          "taskType": "largest_deviation",
+          "prompt": "For this food, which attribute differs the most between the subgroup and the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Astringent",
+          "stimulus": {
+            "foodName": "Lemon slice",
+            "count": 8,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 0.77,
+              "Sourness": 4.41,
+              "Saltiness": 0.51,
+              "Bitterness": 1.1,
+              "Savoriness": 0.31,
+              "Fatness": 0.15,
+              "Astringency": 1.85,
+              "Aromaticity": 2.18,
+              "Texture": 1.62,
+              "Piquancy": 0.21
+            },
+            "baselineStDev": {
+              "Sweetness": 0.73,
+              "Sourness": 1.21,
+              "Saltiness": 0.9,
+              "Bitterness": 1.08,
+              "Savoriness": 0.76,
+              "Fatness": 0.53,
+              "Astringency": 1.56,
+              "Aromaticity": 1.65,
+              "Texture": 1.51,
+              "Piquancy": 0.61
+            },
+            "compareMean": {
+              "Sweetness": 0.62,
+              "Sourness": 4.12,
+              "Saltiness": 0.62,
+              "Bitterness": 1.62,
+              "Savoriness": 0.75,
+              "Fatness": 0.25,
+              "Astringency": 2.75,
+              "Aromaticity": 2.25,
+              "Texture": 1.5,
+              "Piquancy": 0.12
+            },
+            "subgroupLabel": "Non Hispanic White participants"
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.38
+        },
+        {
+          "id": "part2-real-5",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "real",
+          "chartType": "overlaid_radar",
+          "taskType": "higher_than_baseline",
+          "prompt": "For this food, which attribute is rated higher by the subgroup than the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Aromatic",
+          "stimulus": {
+            "foodName": "Bacon",
+            "count": 12,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 0.45,
+              "Sourness": 0.27,
+              "Saltiness": 3.32,
+              "Bitterness": 0.41,
+              "Savoriness": 3.36,
+              "Fatness": 3.68,
+              "Astringency": 0.55,
+              "Aromaticity": 2.68,
+              "Texture": 3.05,
+              "Piquancy": 0.32
+            },
+            "baselineStDev": {
+              "Sweetness": 0.84,
+              "Sourness": 0.75,
+              "Saltiness": 1.61,
+              "Bitterness": 0.78,
+              "Savoriness": 1.72,
+              "Fatness": 1.82,
+              "Astringency": 0.84,
+              "Aromaticity": 1.82,
+              "Texture": 1.43,
+              "Piquancy": 0.7
+            },
+            "compareMean": {
+              "Sweetness": 0.33,
+              "Sourness": 0.25,
+              "Saltiness": 4.08,
+              "Bitterness": 0.5,
+              "Savoriness": 3.83,
+              "Fatness": 4.42,
+              "Astringency": 1.0,
+              "Aromaticity": 3.92,
+              "Texture": 3.25,
+              "Piquancy": 0.42
+            },
+            "subgroupLabel": "Asian participants"
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.48
+        },
+        {
+          "id": "part2-real-6",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "real",
+          "chartType": "zglyph",
+          "taskType": "higher_than_baseline",
+          "prompt": "For this food, which attribute is rated higher by the subgroup than the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Piquant",
+          "stimulus": {
+            "foodName": "Ginger",
+            "count": 15,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 0.48,
+              "Sourness": 0.38,
+              "Saltiness": 0.14,
+              "Bitterness": 0.57,
+              "Savoriness": 0.36,
+              "Fatness": 0.14,
+              "Astringency": 1.12,
+              "Aromaticity": 2.45,
+              "Texture": 2.31,
+              "Piquancy": 3.33
+            },
+            "baselineStDev": {
+              "Sweetness": 0.85,
+              "Sourness": 0.65,
+              "Saltiness": 0.47,
+              "Bitterness": 0.9,
+              "Savoriness": 0.75,
+              "Fatness": 0.47,
+              "Astringency": 1.2,
+              "Aromaticity": 1.95,
+              "Texture": 1.75,
+              "Piquancy": 1.71
+            },
+            "compareMean": {
+              "Sweetness": 0.33,
+              "Sourness": 0.6,
+              "Saltiness": 0.13,
+              "Bitterness": 0.47,
+              "Savoriness": 0.33,
+              "Fatness": 0.13,
+              "Astringency": 1.27,
+              "Aromaticity": 2.6,
+              "Texture": 2.47,
+              "Piquancy": 4.0
+            },
+            "subgroupLabel": "Female participants"
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.45
+        },
+        {
+          "id": "part2-real-7",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "real",
+          "chartType": "overlaid_radar",
+          "taskType": "largest_deviation",
+          "prompt": "For this food, which attribute differs the most between the subgroup and the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Fatty",
+          "stimulus": {
+            "foodName": "Almonds",
+            "count": 10,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 1.04,
+              "Sourness": 0.16,
+              "Saltiness": 0.76,
+              "Bitterness": 0.92,
+              "Savoriness": 0.76,
+              "Fatness": 3.04,
+              "Astringency": 1.08,
+              "Aromaticity": 1.16,
+              "Texture": 4.08,
+              "Piquancy": 0.32
+            },
+            "baselineStDev": {
+              "Sweetness": 1.0,
+              "Sourness": 0.61,
+              "Saltiness": 0.99,
+              "Bitterness": 1.26,
+              "Savoriness": 1.3,
+              "Fatness": 1.46,
+              "Astringency": 1.2,
+              "Aromaticity": 1.08,
+              "Texture": 1.38,
+              "Piquancy": 1.12
+            },
+            "compareMean": {
+              "Sweetness": 1.0,
+              "Sourness": 0.1,
+              "Saltiness": 0.5,
+              "Bitterness": 0.6,
+              "Savoriness": 1.4,
+              "Fatness": 4.2,
+              "Astringency": 1.6,
+              "Aromaticity": 1.9,
+              "Texture": 4.5,
+              "Piquancy": 0.8
+            },
+            "subgroupLabel": "South Asian participants"
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.42
+        },
+        {
+          "id": "part2-real-8",
+          "blockId": "part2",
+          "partId": "part2",
+          "kind": "real",
+          "chartType": "zglyph",
+          "taskType": "largest_deviation",
+          "prompt": "For this food, which attribute differs the most between the subgroup and the baseline?",
+          "options": [
+            "Sweet",
+            "Sour",
+            "Salty",
+            "Bitter",
+            "Savory",
+            "Fatty",
+            "Astringent",
+            "Aromatic",
+            "Texture",
+            "Piquant"
+          ],
+          "correctAnswer": "Astringent",
+          "stimulus": {
+            "foodName": "Strawberry",
+            "count": 8,
+            "senses": {
+              "Sweetness": "Sweet",
+              "Sourness": "Sour",
+              "Saltiness": "Salty",
+              "Bitterness": "Bitter",
+              "Savoriness": "Savory",
+              "Fatness": "Fatty",
+              "Astringency": "Astringent",
+              "Aromaticity": "Aromatic",
+              "Texture": "Texture",
+              "Piquancy": "Piquant"
+            },
+            "valueRange": {
+              "min": 0,
+              "max": 5
+            },
+            "baselineMean": {
+              "Sweetness": 3.24,
+              "Sourness": 2.02,
+              "Saltiness": 0.14,
+              "Bitterness": 0.27,
+              "Savoriness": 0.27,
+              "Fatness": 0.04,
+              "Astringency": 0.71,
+              "Aromaticity": 2.08,
+              "Texture": 2.06,
+              "Piquancy": 0.12
+            },
+            "baselineStDev": {
+              "Sweetness": 0.94,
+              "Sourness": 1.16,
+              "Saltiness": 0.49,
+              "Bitterness": 0.74,
+              "Savoriness": 0.77,
+              "Fatness": 0.19,
+              "Astringency": 0.89,
+              "Aromaticity": 1.27,
+              "Texture": 1.16,
+              "Piquancy": 0.51
+            },
+            "compareMean": {
+              "Sweetness": 3.0,
+              "Sourness": 2.25,
+              "Saltiness": 0.12,
+              "Bitterness": 0.25,
+              "Savoriness": 0.5,
+              "Fatness": 0.25,
+              "Astringency": 1.38,
+              "Aromaticity": 2.38,
+              "Texture": 2.12,
+              "Piquancy": 0.12
+            },
+            "subgroupLabel": "Italian participants"
+          },
+          "difficulty": "medium",
+          "clarityMargin": 0.37
+        }
+      ],
+      "subjectiveSection": {
+        "id": "part2-ratings",
+        "title": "Chart Evaluation",
+        "instructions": "Please rate each chart based on your experience in this part.",
+        "charts": [
+          {
+            "chartType": "overlaid_radar",
+            "title": "Overlaid Radar Chart"
+          },
+          {
+            "chartType": "zglyph",
+            "title": "Z-Score Radar Chart"
+          }
+        ],
+        "questions": [
+          {
+            "id": "easy_compare",
+            "label": "This chart made it easy to identify differences between the subgroup and baseline."
+          },
+          {
+            "id": "confidence",
+            "label": "I felt confident in my answers when using this chart."
+          },
+          {
+            "id": "clear_difference",
+            "label": "This chart clearly showed how the subgroup differs from the baseline."
+          },
+          {
+            "id": "visual_clutter",
+            "label": "This chart felt visually cluttered."
+          }
+        ],
+        "scaleOptions": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ]
+      }
+    }
+  ],
+  "finalPreferenceQuestions": [
+    {
+      "id": "preferred_mean",
+      "label": "Which chart did you prefer for identifying highest mean values?",
+      "options": [
+        "Grouped Bar Chart",
+        "Distribution-Aware Radial Profile"
+      ]
+    },
+    {
+      "id": "preferred_variability",
+      "label": "Which chart did you prefer for understanding variability?",
+      "options": [
+        "Violin Plot",
+        "Distribution-Aware Radial Profile"
+      ]
+    },
+    {
+      "id": "preferred_subgroup",
+      "label": "Which chart did you prefer for comparing subgroup differences?",
+      "options": [
+        "Overlaid Radar Chart",
+        "Z-Score Radar Chart"
+      ]
+    }
+  ],
+  "finalCommentPrompt": "Additional comments (optional)"
+}
