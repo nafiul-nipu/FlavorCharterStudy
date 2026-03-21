@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+import itertools
 import json
 import math
+import os
 import random
 from collections import defaultdict
 from dataclasses import dataclass
-import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +24,8 @@ SOURCE = next((path for path in SOURCE_CANDIDATES if path and path.exists()), No
 OUTPUT = REPO_ROOT / "public" / "study-data" / "study-pack.json"
 
 RANDOM_SEED = 7
+MIN_FOOD_RATINGS = 18
+MIN_GROUP_RATINGS = 8
 
 TASTE_KEYS = [
     "Sweetness",
@@ -52,6 +55,22 @@ SENSE_LABELS = {
 
 LIKERT_OPTIONS = ["1", "2", "3", "4", "5"]
 
+CHART_FOOTPRINTS = {
+    "distribution_radar": {"width": 520, "height": 360, "approximateArea": 187200},
+    "histogram_small_multiples": {
+        "width": 520,
+        "height": 360,
+        "approximateArea": 187200,
+    },
+    "stacked_bar_distribution": {
+        "width": 520,
+        "height": 360,
+        "approximateArea": 187200,
+    },
+    "zchart": {"width": 520, "height": 360, "approximateArea": 187200},
+    "dual_histogram": {"width": 520, "height": 360, "approximateArea": 187200},
+}
+
 
 @dataclass
 class FoodSummary:
@@ -60,29 +79,46 @@ class FoodSummary:
     means: dict[str, float]
     stdevs: dict[str, float]
     distribution: dict[str, dict[str, dict[str, float]]]
-    outliers: dict[str, list[int]]
-    outlier_counts: dict[str, int]
 
 
 @dataclass
-class SummaryCandidate:
+class TupleCandidate:
     summary: FoodSummary
-    answer_key: str
-    margin: float
+    correct_keys: tuple[str, ...]
+    options: list[str]
+    clarity_margin: float
     difficulty: str
+    notes: list[str]
 
 
 @dataclass
-class ComparisonCandidate:
-    food: str
-    subgroup_key: str
-    subgroup_label: str
-    count: int
-    baseline: FoodSummary
-    subgroup_summary: FoodSummary
-    answer_key: str
-    margin: float
+class MultiFoodCandidate:
+    stimulus_id: str
+    foods: list[FoodSummary]
+    target_keys: tuple[str, ...]
+    correct_indices: list[int]
+    clarity_margin: float
     difficulty: str
+    notes: list[str]
+
+
+@dataclass
+class PopulationComparisonCandidate:
+    stimulus_id: str
+    food: str
+    comparison_label: str
+    population_a_id: str
+    population_a_label: str
+    population_a_summary: FoodSummary
+    population_b_id: str
+    population_b_label: str
+    population_b_summary: FoodSummary
+    correct_keys: tuple[str, ...]
+    options: list[str]
+    clarity_margin: float
+    difficulty: str
+    notes: list[str]
+    magnitude_label: str | None = None
 
 
 def load_users() -> dict[str, Any]:
@@ -107,8 +143,6 @@ def compute_summary(food: str, ratings: list[dict[str, Any]]) -> FoodSummary:
     means: dict[str, float] = {}
     stdevs: dict[str, float] = {}
     distribution: dict[str, dict[str, dict[str, float]]] = {}
-    outliers: dict[str, list[int]] = {}
-    outlier_counts: dict[str, int] = {}
 
     for key in TASTE_KEYS:
         vals = get_numeric_values(ratings, key)
@@ -118,29 +152,20 @@ def compute_summary(food: str, ratings: list[dict[str, Any]]) -> FoodSummary:
             distribution[key] = {
                 str(level): {"count": 0, "percent": 0.0} for level in range(6)
             }
-            outliers[key] = []
-            outlier_counts[key] = 0
             continue
 
         mean = sum(vals) / len(vals)
         variance = sum((value - mean) ** 2 for value in vals) / len(vals)
         stdev = math.sqrt(variance)
 
-        means[key] = round(mean, 2)
-        stdevs[key] = round(stdev, 2)
-
         counts = {str(level): 0 for level in range(6)}
-        outlier_levels: set[int] = set()
-        outlier_count = 0
-
         for value in vals:
             level = int(value)
             if str(level) in counts:
                 counts[str(level)] += 1
-            if stdev > 0 and abs(value - mean) > 2 * stdev:
-                outlier_levels.add(level)
-                outlier_count += 1
 
+        means[key] = round(mean, 2)
+        stdevs[key] = round(stdev, 2)
         distribution[key] = {
             str(level): {
                 "count": counts[str(level)],
@@ -148,8 +173,6 @@ def compute_summary(food: str, ratings: list[dict[str, Any]]) -> FoodSummary:
             }
             for level in range(6)
         }
-        outliers[key] = sorted(outlier_levels)
-        outlier_counts[key] = outlier_count
 
     return FoodSummary(
         food=food,
@@ -157,8 +180,6 @@ def compute_summary(food: str, ratings: list[dict[str, Any]]) -> FoodSummary:
         means=means,
         stdevs=stdevs,
         distribution=distribution,
-        outliers=outliers,
-        outlier_counts=outlier_counts,
     )
 
 
@@ -183,7 +204,7 @@ def display_label(field: str, value: str) -> str:
     return f"{pretty.title()} participants"
 
 
-def build_subgroup_maps(
+def build_group_maps(
     users: dict[str, Any],
 ) -> dict[tuple[str, str], dict[str, list[dict[str, Any]]]]:
     food_subgroups: dict[tuple[str, str], dict[str, list[dict[str, Any]]]] = defaultdict(
@@ -209,6 +230,44 @@ def build_subgroup_maps(
     return food_subgroups
 
 
+def percent(summary: FoodSummary, key: str, levels: Iterable[int]) -> float:
+    return sum(summary.distribution[key][str(level)]["percent"] for level in levels) / 100
+
+
+def support_score(summary: FoodSummary, key: str) -> float:
+    high = percent(summary, key, [4, 5])
+    mid = percent(summary, key, [3])
+    low = percent(summary, key, [0, 1])
+    concentration = (
+        max(summary.distribution[key][str(level)]["percent"] for level in range(6)) / 100
+    )
+    return high + 0.45 * concentration + 0.2 * mid - 0.18 * low
+
+
+def difference_score(a: FoodSummary, b: FoodSummary, key: str) -> float:
+    return abs(a.means[key] - b.means[key])
+
+
+def overall_difference_score(a: FoodSummary, b: FoodSummary) -> float:
+    return sum(difference_score(a, b, key) for key in TASTE_KEYS) / len(TASTE_KEYS)
+
+
+def rank_keys_by_score(summary: FoodSummary) -> list[tuple[str, float]]:
+    return sorted(
+        ((key, support_score(summary, key)) for key in TASTE_KEYS),
+        key=lambda item: (item[1], summary.means[item[0]], item[0]),
+        reverse=True,
+    )
+
+
+def rank_difference_keys(a: FoodSummary, b: FoodSummary) -> list[tuple[str, float]]:
+    return sorted(
+        ((key, difference_score(a, b, key)) for key in TASTE_KEYS),
+        key=lambda item: (item[1], max(a.means[item[0]], b.means[item[0]]), item[0]),
+        reverse=True,
+    )
+
+
 def classify_difficulty(margin: float, *, easy: float, medium: float) -> str:
     if margin >= easy:
         return "easy"
@@ -217,23 +276,358 @@ def classify_difficulty(margin: float, *, easy: float, medium: float) -> str:
     return "hard"
 
 
-def select_top_candidate(
-    values: dict[str, float | int],
+def tuple_label(keys: tuple[str, ...]) -> str:
+    return ", ".join(SENSE_LABELS[key] for key in keys)
+
+
+def canonical_tuple(keys: Iterable[str]) -> tuple[str, ...]:
+    return tuple(sorted(keys, key=TASTE_KEYS.index))
+
+
+def ensure_unique_options(correct: tuple[str, ...], option_keys: list[tuple[str, ...]]) -> list[str]:
+    labels: list[str] = []
+    seen = {correct}
+    labels.append(tuple_label(correct))
+    for option in option_keys:
+        if option in seen:
+            continue
+        seen.add(option)
+        labels.append(tuple_label(option))
+        if len(labels) == 4:
+            break
+    return labels
+
+
+def build_tuple_candidate(summary: FoodSummary) -> TupleCandidate | None:
+    ranked = rank_keys_by_score(summary)
+    if len(ranked) < 5:
+        return None
+    correct = tuple(key for key, _ in ranked[:3])
+    margin = ranked[2][1] - ranked[3][1]
+    if ranked[2][1] < 0.4 or margin < 0.03:
+        return None
+
+    distractor_keys = [
+        (ranked[0][0], ranked[1][0], ranked[3][0]),
+        (ranked[0][0], ranked[2][0], ranked[3][0]),
+        (ranked[1][0], ranked[2][0], ranked[3][0]),
+        (ranked[0][0], ranked[1][0], ranked[4][0]),
+        (ranked[0][0], ranked[2][0], ranked[4][0]),
+        (ranked[1][0], ranked[2][0], ranked[4][0]),
+    ]
+    options = ensure_unique_options(correct, distractor_keys)
+    if len(options) < 4:
+        return None
+
+    notes = [
+        f"support={tuple_label(correct)}",
+        f"top-three-vs-fourth margin={margin:.2f}",
+    ]
+    return TupleCandidate(
+        summary=summary,
+        correct_keys=correct,
+        options=options,
+        clarity_margin=round(margin, 2),
+        difficulty=classify_difficulty(margin, easy=0.14, medium=0.08),
+        notes=notes,
+    )
+
+
+def best_spatial_pair(summary: FoodSummary) -> tuple[tuple[str, str], float] | None:
+    ranked = rank_keys_by_score(summary)
+    top_keys = [key for key, _ in ranked[:4]]
+    best_pair: tuple[str, str] | None = None
+    best_score = -1.0
+    for left, right in itertools.combinations(top_keys, 2):
+        left_idx = TASTE_KEYS.index(left)
+        right_idx = TASTE_KEYS.index(right)
+        distance = abs(left_idx - right_idx)
+        circular_distance = min(distance, len(TASTE_KEYS) - distance)
+        if circular_distance < 3:
+            continue
+        pair_score = support_score(summary, left) + support_score(summary, right)
+        if pair_score > best_score:
+            best_score = pair_score
+            best_pair = (left, right)
+    if best_pair is None:
+        return None
+    return best_pair, best_score
+
+
+def overlaps(keys: Iterable[str], target: tuple[str, ...]) -> int:
+    return len(set(keys) & set(target))
+
+
+def build_profile_candidates(
+    summaries: list[FoodSummary],
     *,
-    minimum_margin: float,
-    minimum_top_value: float | None = None,
-) -> tuple[str | None, float | None]:
-    ordered = sorted(values.items(), key=lambda item: item[1], reverse=True)
-    if len(ordered) < 2:
-        return None, None
-    best_key, best_value = ordered[0]
-    second_value = ordered[1][1]
-    margin = float(best_value - second_value)
-    if minimum_top_value is not None and float(best_value) < minimum_top_value:
-        return None, None
-    if best_value == second_value or margin < minimum_margin:
-        return None, None
-    return best_key, margin
+    mode: str,
+    needed: int,
+) -> list[MultiFoodCandidate]:
+    signatures: dict[tuple[str, ...], list[FoodSummary]] = defaultdict(list)
+    for summary in summaries:
+        ranked = rank_keys_by_score(summary)
+        if mode == "dominant":
+            signatures[canonical_tuple(key for key, _ in ranked[:3])].append(summary)
+        else:
+            pair = best_spatial_pair(summary)
+            if pair is not None:
+                signatures[canonical_tuple(pair[0])].append(summary)
+
+    candidates: list[MultiFoodCandidate] = []
+    for target_keys, matches in signatures.items():
+        if len(matches) < 2:
+            continue
+        ordered_matches = sorted(matches, key=lambda item: (-item.count, item.food))
+        chosen_matches = ordered_matches[:2]
+
+        distractor_pool = []
+        for summary in summaries:
+            if summary.food in {item.food for item in chosen_matches}:
+                continue
+            ranked = rank_keys_by_score(summary)
+            if mode == "dominant":
+                summary_keys = canonical_tuple(key for key, _ in ranked[:3])
+            else:
+                pair = best_spatial_pair(summary)
+                if pair is None:
+                    continue
+                summary_keys = canonical_tuple(pair[0])
+
+            shared = overlaps(summary_keys, target_keys)
+            if shared == len(target_keys):
+                continue
+            distractor_pool.append((shared, summary.count, summary))
+
+        if len(distractor_pool) < 3:
+            continue
+
+        distractor_pool.sort(key=lambda item: (-item[0], -item[1], item[2].food))
+        selected_distractors = [item[2] for item in distractor_pool[:3]]
+        displayed = chosen_matches + selected_distractors
+        random.Random(f"{mode}:{target_keys}").shuffle(displayed)
+        correct_indices = sorted(
+            item + 1
+            for item, summary in enumerate(displayed)
+            if summary.food in {match.food for match in chosen_matches}
+        )
+
+        max_distractor_overlap = max(
+            overlaps(
+                tuple(key for key, _ in rank_keys_by_score(summary)[:3]),
+                target_keys,
+            )
+            for summary in selected_distractors
+        )
+        clarity_margin = max(0.0, len(target_keys) - max_distractor_overlap)
+        if clarity_margin < 1:
+            continue
+
+        label = " and ".join(SENSE_LABELS[key] for key in target_keys)
+        notes = [
+            f"target={label}",
+            f"matches={', '.join(match.food for match in chosen_matches)}",
+            f"distractor-overlap-max={max_distractor_overlap}",
+        ]
+        candidates.append(
+            MultiFoodCandidate(
+                stimulus_id=f"{mode}-{'-'.join(target_keys)}-{'-'.join(match.food for match in chosen_matches)}",
+                foods=displayed,
+                target_keys=target_keys,
+                correct_indices=correct_indices,
+                clarity_margin=round(clarity_margin, 2),
+                difficulty=classify_difficulty(clarity_margin, easy=2.0, medium=1.5),
+                notes=notes,
+            )
+        )
+
+    candidates.sort(
+        key=lambda item: (
+            item.clarity_margin,
+            sum(food.count for food in item.foods),
+            tuple(food.food for food in item.foods),
+        ),
+        reverse=True,
+    )
+    return candidates[: max(needed * 3, needed)]
+
+
+def build_population_candidates(
+    group_maps: dict[tuple[str, str], dict[str, list[dict[str, Any]]]],
+    *,
+    overall_summaries: dict[str, FoodSummary],
+) -> tuple[list[PopulationComparisonCandidate], list[PopulationComparisonCandidate]]:
+    by_field: dict[str, list[str]] = defaultdict(list)
+    for field, value in group_maps:
+        by_field[field].append(value)
+
+    tuple_candidates: list[PopulationComparisonCandidate] = []
+    size_candidates: list[PopulationComparisonCandidate] = []
+
+    for field, values in by_field.items():
+        unique_values = sorted(set(values))
+        for left, right in itertools.combinations(unique_values, 2):
+            left_map = group_maps[(field, left)]
+            right_map = group_maps[(field, right)]
+            common_foods = sorted(set(left_map) & set(right_map))
+            for food in common_foods:
+                left_ratings = left_map[food]
+                right_ratings = right_map[food]
+                if len(left_ratings) < MIN_GROUP_RATINGS or len(right_ratings) < MIN_GROUP_RATINGS:
+                    continue
+
+                left_summary = compute_summary(food, left_ratings)
+                right_summary = compute_summary(food, right_ratings)
+                ranked = rank_difference_keys(left_summary, right_summary)
+                if len(ranked) < 4:
+                    continue
+
+                correct = (ranked[0][0], ranked[1][0])
+                tuple_margin = ranked[1][1] - ranked[2][1]
+                tuple_strength = (ranked[0][1] + ranked[1][1]) / 2
+                if tuple_strength >= 0.55 and tuple_margin >= 0.08:
+                    distractors = [
+                        (ranked[0][0], ranked[2][0]),
+                        (ranked[1][0], ranked[2][0]),
+                        (ranked[0][0], ranked[3][0]),
+                        (ranked[1][0], ranked[3][0]),
+                    ]
+                    options = ensure_unique_options(correct, distractors)
+                    if len(options) == 4:
+                        tuple_candidates.append(
+                            PopulationComparisonCandidate(
+                                stimulus_id=f"{field}-{left}-vs-{right}-{food}",
+                                food=food,
+                                comparison_label=f"{display_label(field, left)} vs {display_label(field, right)}",
+                                population_a_id=f"{field}:{left}",
+                                population_a_label=display_label(field, left),
+                                population_a_summary=left_summary,
+                                population_b_id=f"{field}:{right}",
+                                population_b_label=display_label(field, right),
+                                population_b_summary=right_summary,
+                                correct_keys=correct,
+                                options=options,
+                                clarity_margin=round(tuple_margin, 2),
+                                difficulty=classify_difficulty(tuple_margin, easy=0.18, medium=0.1),
+                                notes=[
+                                    f"top-difference={tuple_label(correct)}",
+                                    f"avg-top-diff={tuple_strength:.2f}",
+                                ],
+                            )
+                        )
+
+                overall = overall_difference_score(left_summary, right_summary)
+                top_diff = ranked[0][1]
+                magnitude_label = None
+                if overall >= 0.55 and top_diff >= 0.95:
+                    magnitude_label = "Significant"
+                    margin = overall
+                elif overall <= 0.26 and top_diff <= 0.52:
+                    magnitude_label = "Subtle"
+                    margin = 0.52 - top_diff
+                else:
+                    continue
+
+                size_candidates.append(
+                    PopulationComparisonCandidate(
+                        stimulus_id=f"magnitude-{field}-{left}-vs-{right}-{food}",
+                        food=food,
+                        comparison_label=f"{display_label(field, left)} vs {display_label(field, right)}",
+                        population_a_id=f"{field}:{left}",
+                        population_a_label=display_label(field, left),
+                        population_a_summary=left_summary,
+                        population_b_id=f"{field}:{right}",
+                        population_b_label=display_label(field, right),
+                        population_b_summary=right_summary,
+                        correct_keys=(),
+                        options=["Significant", "Subtle"],
+                        clarity_margin=round(margin, 2),
+                        difficulty=classify_difficulty(margin, easy=0.55, medium=0.32),
+                        notes=[
+                            f"overall-diff={overall:.2f}",
+                            f"top-diff={top_diff:.2f}",
+                            f"magnitude={magnitude_label}",
+                        ],
+                        magnitude_label=magnitude_label,
+                    )
+                )
+
+    tuple_candidates.sort(
+        key=lambda item: (item.clarity_margin, item.food, item.comparison_label),
+        reverse=True,
+    )
+    size_candidates.sort(
+        key=lambda item: (item.clarity_margin, item.food, item.comparison_label),
+        reverse=True,
+    )
+    return tuple_candidates, size_candidates
+
+
+def single_food_stimulus(summary: FoodSummary, stimulus_id: str) -> dict[str, Any]:
+    return {
+        "stimulusId": stimulus_id,
+        "stimulusKind": "single_food",
+        "foodName": summary.food,
+        "foodNames": [summary.food],
+        "count": summary.count,
+        "senses": SENSE_LABELS,
+        "valueRange": {"min": 0, "max": 5},
+        "meanValues": summary.means,
+        "stdevs": summary.stdevs,
+        "distribution": summary.distribution,
+    }
+
+
+def multi_food_stimulus(candidate: MultiFoodCandidate) -> dict[str, Any]:
+    return {
+        "stimulusId": candidate.stimulus_id,
+        "stimulusKind": "multi_food",
+        "foodName": ", ".join(food.food for food in candidate.foods),
+        "foodNames": [food.food for food in candidate.foods],
+        "senses": SENSE_LABELS,
+        "valueRange": {"min": 0, "max": 5},
+        "targetProfileKeys": list(candidate.target_keys),
+        "targetProfileLabels": [SENSE_LABELS[key] for key in candidate.target_keys],
+        "foods": [
+            {
+                "index": index + 1,
+                "foodName": food.food,
+                "count": food.count,
+                "meanValues": food.means,
+                "stdevs": food.stdevs,
+                "distribution": food.distribution,
+            }
+            for index, food in enumerate(candidate.foods)
+        ],
+    }
+
+
+def comparison_stimulus(candidate: PopulationComparisonCandidate) -> dict[str, Any]:
+    return {
+        "stimulusId": candidate.stimulus_id,
+        "stimulusKind": "population_comparison",
+        "foodName": candidate.food,
+        "foodNames": [candidate.food],
+        "comparisonLabel": candidate.comparison_label,
+        "populationA": {
+            "id": candidate.population_a_id,
+            "label": candidate.population_a_label,
+            "count": candidate.population_a_summary.count,
+            "meanValues": candidate.population_a_summary.means,
+            "stdevs": candidate.population_a_summary.stdevs,
+            "distribution": candidate.population_a_summary.distribution,
+        },
+        "populationB": {
+            "id": candidate.population_b_id,
+            "label": candidate.population_b_label,
+            "count": candidate.population_b_summary.count,
+            "meanValues": candidate.population_b_summary.means,
+            "stdevs": candidate.population_b_summary.stdevs,
+            "distribution": candidate.population_b_summary.distribution,
+        },
+        "senses": SENSE_LABELS,
+        "valueRange": {"min": 0, "max": 5},
+    }
 
 
 def make_trial(
@@ -244,12 +638,14 @@ def make_trial(
     kind: str,
     chart_type: str,
     task_type: str,
+    answer_mode: str,
     prompt: str,
     options: list[str],
-    correct_answer: str,
+    correct_answer: str | list[str],
     stimulus: dict[str, Any],
     difficulty: str | None = None,
     clarity_margin: float | None = None,
+    developer_notes: list[str] | None = None,
 ) -> dict[str, Any]:
     trial = {
         "id": trial_id,
@@ -258,151 +654,58 @@ def make_trial(
         "kind": kind,
         "chartType": chart_type,
         "taskType": task_type,
+        "answerMode": answer_mode,
         "prompt": prompt,
         "options": options,
         "correctAnswer": correct_answer,
         "stimulus": stimulus,
+        "footprint": CHART_FOOTPRINTS[chart_type],
     }
     if difficulty is not None:
         trial["difficulty"] = difficulty
     if clarity_margin is not None:
         trial["clarityMargin"] = round(clarity_margin, 2)
+    if developer_notes:
+        trial["developerNotes"] = developer_notes
     return trial
 
 
-def outlier_stimulus(summary: FoodSummary) -> dict[str, Any]:
-    return {
-        "foodName": summary.food,
-        "count": summary.count,
-        "senses": SENSE_LABELS,
-        "valueRange": {"min": 0, "max": 5},
-        "meanValues": summary.means,
-        "stdevs": summary.stdevs,
-        "distribution": summary.distribution,
-        "outliers": summary.outliers,
-    }
-
-
-def comparison_stimulus(candidate: ComparisonCandidate) -> dict[str, Any]:
-    return {
-        "foodName": candidate.food,
-        "count": candidate.count,
-        "senses": SENSE_LABELS,
-        "valueRange": {"min": 0, "max": 5},
-        "baselineMean": candidate.baseline.means,
-        "baselineStDev": candidate.baseline.stdevs,
-        "compareMean": candidate.subgroup_summary.means,
-        "subgroupLabel": candidate.subgroup_label,
-    }
-
-
-def trial_food_name(trial: dict[str, Any]) -> str:
-    return str(trial.get("stimulus", {}).get("foodName", ""))
-
-
-def trial_task_type(trial: dict[str, Any]) -> str:
-    return str(trial.get("taskType", ""))
-
-
-def order_trials(trials: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    remaining = trials[:]
-    ordered: list[dict[str, Any]] = []
-
-    while remaining:
-        previous = ordered[-1] if ordered else None
-        recent_pairs = {
-            (trial_food_name(trial), trial_task_type(trial))
-            for trial in ordered[-2:]
-        }
-
-        def score(candidate: dict[str, Any]) -> tuple[int, int, int, int, int, str]:
-            same_food = int(
-                previous is not None
-                and trial_food_name(candidate) == trial_food_name(previous)
-            )
-            same_chart = int(
-                previous is not None
-                and candidate["chartType"] == previous["chartType"]
-            )
-            same_task = int(
-                previous is not None
-                and trial_task_type(candidate) == trial_task_type(previous)
-            )
-            same_task_streak = int(
-                len(ordered) >= 2
-                and ordered[-1]["taskType"] == ordered[-2]["taskType"] == candidate["taskType"]
-            )
-            same_food_task_recent = int(
-                (trial_food_name(candidate), trial_task_type(candidate)) in recent_pairs
-            )
-            return (
-                same_food,
-                same_chart,
-                same_task_streak,
-                same_task,
-                same_food_task_recent,
-                str(candidate["id"]),
-            )
-
-        next_trial = min(remaining, key=score)
-        ordered.append(next_trial)
-        remaining.remove(next_trial)
-
-    return ordered
-
-
-def pick_candidates(
-    candidates: list[Any],
-    count: int,
-    key_fn,
-    exclude_keys: set[str] | None = None,
-) -> list[Any]:
+def pick_unique(items: list[Any], count: int, key_fn) -> list[Any]:
     chosen: list[Any] = []
-    seen = set(exclude_keys or set())
-
-    for candidate in candidates:
-        key = key_fn(candidate)
+    seen: set[str] = set()
+    for item in items:
+        key = key_fn(item)
         if key in seen:
             continue
-        chosen.append(candidate)
+        chosen.append(item)
         seen.add(key)
         if len(chosen) == count:
-            return chosen
-
-    for candidate in candidates:
-        if candidate in chosen:
-            continue
-        chosen.append(candidate)
-        if len(chosen) == count:
             break
-
+    if len(chosen) < count:
+        raise ValueError(f"Unable to pick {count} unique items.")
     return chosen
 
 
-def build_ordered_trials(
-    sequence: list[tuple[str, str]],
-    pools: dict[tuple[str, str], list[Any]],
-    build_trial,
-) -> list[dict[str, Any]]:
-    counters = {key: 0 for key in pools}
-    ordered: list[dict[str, Any]] = []
-    for index, key in enumerate(sequence, start=1):
-        pool = pools[key]
-        candidate = pool[counters[key]]
-        counters[key] += 1
-        ordered.append(build_trial(index, key, candidate))
-    return ordered
+def chart_title(chart_type: str) -> str:
+    return {
+        "distribution_radar": "Distribution-Aware Radial Profile",
+        "histogram_small_multiples": "Histogram Small Multiples",
+        "stacked_bar_distribution": "Stacked Bar Distribution",
+        "zchart": "Z-Score Radar Chart",
+        "dual_histogram": "Dual Histogram Comparison",
+    }[chart_type]
 
 
 def build_pack() -> dict[str, Any]:
+    random.seed(RANDOM_SEED)
     users = load_users()
     foods_map = build_food_maps(users)
-    subgroup_map = build_subgroup_maps(users)
+    group_maps = build_group_maps(users)
 
     overall_summaries = {
         food: compute_summary(food, ratings)
         for food, ratings in foods_map.items()
-        if len(ratings) >= 18
+        if len(ratings) >= MIN_FOOD_RATINGS
     }
     ranked_summaries = sorted(
         overall_summaries.values(),
@@ -410,476 +713,539 @@ def build_pack() -> dict[str, Any]:
         reverse=True,
     )
 
-    mean_candidates: list[SummaryCandidate] = []
-    variability_candidates: list[SummaryCandidate] = []
-    comparison_higher_candidates: list[ComparisonCandidate] = []
-    comparison_deviation_candidates: list[ComparisonCandidate] = []
-
-    for summary in ranked_summaries:
-        mean_key, mean_margin = select_top_candidate(
-            summary.means,
-            minimum_margin=0.15,
-        )
-        if mean_key and mean_margin is not None:
-            mean_candidates.append(
-                SummaryCandidate(
-                    summary=summary,
-                    answer_key=mean_key,
-                    margin=mean_margin,
-                    difficulty=classify_difficulty(mean_margin, easy=0.75, medium=0.35),
-                )
-            )
-
-        variability_key, variability_margin = select_top_candidate(
-            summary.stdevs,
-            minimum_margin=0.10,
-        )
-        if variability_key and variability_margin is not None:
-            variability_candidates.append(
-                SummaryCandidate(
-                    summary=summary,
-                    answer_key=variability_key,
-                    margin=variability_margin,
-                    difficulty=classify_difficulty(
-                        variability_margin,
-                        easy=0.50,
-                        medium=0.20,
-                    ),
-                )
-            )
-
-    for (field, subgroup_key), by_food in subgroup_map.items():
-        for food, ratings in by_food.items():
-            baseline = overall_summaries.get(food)
-            if not baseline or len(ratings) < 8:
-                continue
-
-            subgroup_summary = compute_summary(food, ratings)
-            subgroup_label = display_label(field, subgroup_key)
-            higher_deltas = {
-                key: subgroup_summary.means[key] - baseline.means[key]
-                for key in TASTE_KEYS
-                if subgroup_summary.means[key] - baseline.means[key] > 0
-            }
-            higher_key, higher_margin = select_top_candidate(
-                higher_deltas,
-                minimum_margin=0.10,
-            )
-            if higher_key and higher_margin is not None:
-                comparison_higher_candidates.append(
-                    ComparisonCandidate(
-                        food=food,
-                        subgroup_key=f"{field}:{subgroup_key}",
-                        subgroup_label=subgroup_label,
-                        count=len(ratings),
-                        baseline=baseline,
-                        subgroup_summary=subgroup_summary,
-                        answer_key=higher_key,
-                        margin=higher_margin,
-                        difficulty=classify_difficulty(
-                            higher_margin,
-                            easy=0.50,
-                            medium=0.20,
-                        ),
-                    )
-                )
-
-            deviation_deltas = {
-                key: abs(subgroup_summary.means[key] - baseline.means[key])
-                for key in TASTE_KEYS
-            }
-            deviation_key, deviation_margin = select_top_candidate(
-                deviation_deltas,
-                minimum_margin=0.10,
-            )
-            if deviation_key and deviation_margin is not None:
-                comparison_deviation_candidates.append(
-                    ComparisonCandidate(
-                        food=food,
-                        subgroup_key=f"{field}:{subgroup_key}",
-                        subgroup_label=subgroup_label,
-                        count=len(ratings),
-                        baseline=baseline,
-                        subgroup_summary=subgroup_summary,
-                        answer_key=deviation_key,
-                        margin=deviation_margin,
-                        difficulty=classify_difficulty(
-                            deviation_margin,
-                            easy=0.50,
-                            medium=0.20,
-                        ),
-                    )
-                )
-
-    random.seed(RANDOM_SEED)
-    random.shuffle(mean_candidates)
-    random.shuffle(variability_candidates)
-    random.shuffle(comparison_higher_candidates)
-    random.shuffle(comparison_deviation_candidates)
-    comparison_higher_candidates.sort(
-        key=lambda candidate: (candidate.margin, candidate.count, candidate.food),
-        reverse=True,
-    )
-    comparison_deviation_candidates.sort(
-        key=lambda candidate: (candidate.margin, candidate.count, candidate.food),
-        reverse=True,
+    block1_candidates = [
+        candidate
+        for summary in ranked_summaries
+        if (candidate := build_tuple_candidate(summary)) is not None
+    ]
+    block2_candidates = build_profile_candidates(ranked_summaries, mode="dominant", needed=3)
+    block3_candidates = build_profile_candidates(ranked_summaries, mode="spatial", needed=3)
+    block4_candidates, block5_candidates = build_population_candidates(
+        group_maps,
+        overall_summaries=overall_summaries,
     )
 
-    part1_practice_bar = mean_candidates[0]
-    part1_practice_violin = pick_candidates(
-        variability_candidates,
-        1,
-        lambda candidate: candidate.summary.food,
-        exclude_keys={part1_practice_bar.summary.food},
-    )[0]
-    part1_practice_radial = pick_candidates(
-        mean_candidates[1:] + mean_candidates[:1],
-        1,
-        lambda candidate: candidate.summary.food,
-        exclude_keys={
-            part1_practice_bar.summary.food,
-            part1_practice_violin.summary.food,
-        },
-    )[0]
+    block5_significant = [item for item in block5_candidates if item.magnitude_label == "Significant"]
+    block5_subtle = [item for item in block5_candidates if item.magnitude_label == "Subtle"]
 
-    part2_practice_overlaid = comparison_higher_candidates[0]
-    part2_practice_zglyph = pick_candidates(
-        comparison_deviation_candidates,
-        1,
-        lambda candidate: candidate.food,
-        exclude_keys={part2_practice_overlaid.food},
-    )[0]
-
-    used_part1_foods = {
-        part1_practice_bar.summary.food,
-        part1_practice_violin.summary.food,
-        part1_practice_radial.summary.food,
-    }
-    used_part2_foods = {
-        part2_practice_overlaid.food,
-        part2_practice_zglyph.food,
-    }
-
-    mean_grouped = pick_candidates(
-        mean_candidates[1:],
+    block1_selected = pick_unique(block1_candidates, 4, lambda item: item.summary.food)
+    block2_selected = pick_unique(block2_candidates, 4, lambda item: item.stimulus_id)
+    block3_selected = pick_unique(block3_candidates, 4, lambda item: item.stimulus_id)
+    block4_selected = pick_unique(block4_candidates, 4, lambda item: item.stimulus_id)
+    block5_significant_selected = pick_unique(
+        block5_significant,
         2,
-        lambda candidate: candidate.summary.food,
-        exclude_keys=used_part1_foods,
+        lambda item: item.stimulus_id,
     )
-    mean_radial = pick_candidates(
-        mean_candidates[1:],
+    block5_subtle_selected = pick_unique(
+        block5_subtle,
         2,
-        lambda candidate: candidate.summary.food,
-        exclude_keys=used_part1_foods | {candidate.summary.food for candidate in mean_grouped},
-    )
-    variability_violin = pick_candidates(
-        variability_candidates,
-        2,
-        lambda candidate: candidate.summary.food,
-        exclude_keys=used_part1_foods | {candidate.summary.food for candidate in mean_grouped + mean_radial},
-    )
-    variability_radial = pick_candidates(
-        variability_candidates,
-        2,
-        lambda candidate: candidate.summary.food,
-        exclude_keys=used_part1_foods
-        | {candidate.summary.food for candidate in mean_grouped + mean_radial + variability_violin},
+        lambda item: item.stimulus_id,
     )
 
-    higher_overlaid = pick_candidates(
-        comparison_higher_candidates[1:],
-        2,
-        lambda candidate: candidate.food,
-        exclude_keys=used_part2_foods,
-    )
-    higher_zglyph = pick_candidates(
-        comparison_higher_candidates[1:],
-        2,
-        lambda candidate: candidate.food,
-        exclude_keys=used_part2_foods | {candidate.food for candidate in higher_overlaid},
-    )
-    deviation_overlaid = pick_candidates(
-        comparison_deviation_candidates,
-        2,
-        lambda candidate: candidate.food,
-        exclude_keys=used_part2_foods | {candidate.food for candidate in higher_overlaid + higher_zglyph},
-    )
-    deviation_zglyph = pick_candidates(
-        comparison_deviation_candidates,
-        2,
-        lambda candidate: candidate.food,
-        exclude_keys=used_part2_foods
-        | {candidate.food for candidate in higher_overlaid + higher_zglyph + deviation_overlaid},
-    )
+    block1_practice_candidate = block1_selected[0]
+    block1_real_candidates = block1_selected[1:3]
+    block1_preview_candidate = block1_selected[3]
 
-    part1_practice = [
+    block2_practice_candidate = block2_selected[0]
+    block2_real_candidates = block2_selected[1:3]
+    block2_preview_candidate = block2_selected[3]
+
+    block3_practice_candidate = block3_selected[0]
+    block3_real_candidates = block3_selected[1:3]
+    block3_preview_candidate = block3_selected[3]
+
+    block4_practice_candidate = block4_selected[0]
+    block4_real_candidates = block4_selected[1:3]
+    block4_preview_candidate = block4_selected[3]
+
+    block5_practice_candidate = block5_significant_selected[0]
+    block5_real_candidates = [block5_subtle_selected[0], block5_significant_selected[1]]
+    block5_preview_candidate = block5_subtle_selected[1]
+
+    block1_practice = [
         make_trial(
-            trial_id="part1-practice-1",
-            block_id="part1",
-            part_id="part1",
+            trial_id="block1-practice-1",
+            block_id="block1",
+            part_id="part_a",
             kind="practice",
-            chart_type="grouped_bar",
-            task_type="highest_mean",
-            prompt="Which taste dimension has the highest mean rating for this food?",
-            options=list(SENSE_LABELS.values()),
-            correct_answer=SENSE_LABELS[part1_practice_bar.answer_key],
-            stimulus=outlier_stimulus(part1_practice_bar.summary),
-            difficulty=part1_practice_bar.difficulty,
-            clarity_margin=part1_practice_bar.margin,
-        ),
-        make_trial(
-            trial_id="part1-practice-2",
-            block_id="part1",
-            part_id="part1",
-            kind="practice",
-            chart_type="violin_plot",
-            task_type="highest_variability",
-            prompt="Which attribute shows the greatest variability in ratings?",
-            options=list(SENSE_LABELS.values()),
-            correct_answer=SENSE_LABELS[part1_practice_violin.answer_key],
-            stimulus=outlier_stimulus(part1_practice_violin.summary),
-            difficulty=part1_practice_violin.difficulty,
-            clarity_margin=part1_practice_violin.margin,
-        ),
-        make_trial(
-            trial_id="part1-practice-3",
-            block_id="part1",
-            part_id="part1",
-            kind="practice",
-            chart_type="outlier_radar",
-            task_type="highest_mean",
-            prompt="Which taste dimension has the highest mean rating for this food?",
-            options=list(SENSE_LABELS.values()),
-            correct_answer=SENSE_LABELS[part1_practice_radial.answer_key],
-            stimulus=outlier_stimulus(part1_practice_radial.summary),
-            difficulty=part1_practice_radial.difficulty,
-            clarity_margin=part1_practice_radial.margin,
+            chart_type="distribution_radar",
+            task_type="distribution_agreement",
+            answer_mode="single_choice_tuple",
+            prompt="Which combination of taste attributes is most strongly supported by the ratings?",
+            options=block1_practice_candidate.options,
+            correct_answer=tuple_label(block1_practice_candidate.correct_keys),
+            stimulus=single_food_stimulus(block1_practice_candidate.summary, "block1-practice"),
+            difficulty=block1_practice_candidate.difficulty,
+            clarity_margin=block1_practice_candidate.clarity_margin,
+            developer_notes=block1_practice_candidate.notes,
         )
     ]
 
-    part2_practice = [
-        make_trial(
-            trial_id="part2-practice-1",
-            block_id="part2",
-            part_id="part2",
-            kind="practice",
-            chart_type="overlaid_radar",
-            task_type="higher_than_baseline",
-            prompt="For this food, which attribute is rated higher by the subgroup than the baseline?",
-            options=list(SENSE_LABELS.values()),
-            correct_answer=SENSE_LABELS[part2_practice_overlaid.answer_key],
-            stimulus=comparison_stimulus(part2_practice_overlaid),
-            difficulty=part2_practice_overlaid.difficulty,
-            clarity_margin=part2_practice_overlaid.margin,
-        ),
-        make_trial(
-            trial_id="part2-practice-2",
-            block_id="part2",
-            part_id="part2",
-            kind="practice",
-            chart_type="zglyph",
-            task_type="largest_deviation",
-            prompt="For this food, which attribute differs the most between the subgroup and the baseline?",
-            options=list(SENSE_LABELS.values()),
-            correct_answer=SENSE_LABELS[part2_practice_zglyph.answer_key],
-            stimulus=comparison_stimulus(part2_practice_zglyph),
-            difficulty=part2_practice_zglyph.difficulty,
-            clarity_margin=part2_practice_zglyph.margin,
-        )
+    block1_real_sequence = [
+        (0, "distribution_radar"),
+        (1, "histogram_small_multiples"),
+        (0, "stacked_bar_distribution"),
+        (1, "distribution_radar"),
+        (0, "histogram_small_multiples"),
+        (1, "stacked_bar_distribution"),
     ]
-
-    part1_real = build_ordered_trials(
-        [
-            ("grouped_bar", "highest_mean"),
-            ("outlier_radar", "highest_mean"),
-            ("violin_plot", "highest_variability"),
-            ("outlier_radar", "highest_variability"),
-            ("grouped_bar", "highest_mean"),
-            ("outlier_radar", "highest_mean"),
-            ("violin_plot", "highest_variability"),
-            ("outlier_radar", "highest_variability"),
-        ],
-        {
-            ("grouped_bar", "highest_mean"): mean_grouped,
-            ("outlier_radar", "highest_mean"): mean_radial,
-            ("violin_plot", "highest_variability"): variability_violin,
-            ("outlier_radar", "highest_variability"): variability_radial,
-        },
-        lambda index, key, candidate:
+    block1_real = []
+    for index, (candidate_index, chart_type) in enumerate(block1_real_sequence, start=1):
+        candidate = block1_real_candidates[candidate_index]
+        block1_real.append(
             make_trial(
-                trial_id=f"part1-real-{index}",
-                block_id="part1",
-                part_id="part1",
+                trial_id=f"block1-real-{index}",
+                block_id="block1",
+                part_id="part_a",
                 kind="real",
-                chart_type=key[0],
-                task_type=key[1],
-                prompt=(
-                    "Which taste dimension has the highest mean rating for this food?"
-                    if key[1] == "highest_mean"
-                    else "Which attribute shows the greatest variability in ratings?"
-                ),
-                options=list(SENSE_LABELS.values()),
-                correct_answer=SENSE_LABELS[candidate.answer_key],
-                stimulus=outlier_stimulus(candidate.summary),
+                chart_type=chart_type,
+                task_type="distribution_agreement",
+                answer_mode="single_choice_tuple",
+                prompt="Which combination of taste attributes is most strongly supported by the ratings?",
+                options=candidate.options,
+                correct_answer=tuple_label(candidate.correct_keys),
+                stimulus=single_food_stimulus(candidate.summary, f"block1-real-{candidate.summary.food}"),
                 difficulty=candidate.difficulty,
-                clarity_margin=candidate.margin,
+                clarity_margin=candidate.clarity_margin,
+                developer_notes=candidate.notes,
             )
-    )
+        )
 
-    part2_real = build_ordered_trials(
-        [
-            ("overlaid_radar", "higher_than_baseline"),
-            ("zglyph", "higher_than_baseline"),
-            ("overlaid_radar", "largest_deviation"),
-            ("zglyph", "largest_deviation"),
-            ("overlaid_radar", "higher_than_baseline"),
-            ("zglyph", "higher_than_baseline"),
-            ("overlaid_radar", "largest_deviation"),
-            ("zglyph", "largest_deviation"),
-        ],
-        {
-            ("overlaid_radar", "higher_than_baseline"): higher_overlaid,
-            ("zglyph", "higher_than_baseline"): higher_zglyph,
-            ("overlaid_radar", "largest_deviation"): deviation_overlaid,
-            ("zglyph", "largest_deviation"): deviation_zglyph,
-        },
-        lambda index, key, candidate:
+    block2_practice = [
+        make_trial(
+            trial_id="block2-practice-1",
+            block_id="block2",
+            part_id="part_a",
+            kind="practice",
+            chart_type="histogram_small_multiples",
+            task_type="dominant_profile_similarity",
+            answer_mode="multi_select_indices",
+            prompt=f"Which of the numbered foods match the target flavor profile: {tuple_label(block2_practice_candidate.target_keys)}?",
+            options=[str(food["index"]) for food in multi_food_stimulus(block2_practice_candidate)["foods"]],
+            correct_answer=[str(index) for index in block2_practice_candidate.correct_indices],
+            stimulus=multi_food_stimulus(block2_practice_candidate),
+            difficulty=block2_practice_candidate.difficulty,
+            clarity_margin=block2_practice_candidate.clarity_margin,
+            developer_notes=block2_practice_candidate.notes,
+        )
+    ]
+
+    block2_real_sequence = [
+        (0, "distribution_radar"),
+        (1, "histogram_small_multiples"),
+        (0, "stacked_bar_distribution"),
+        (1, "distribution_radar"),
+        (0, "histogram_small_multiples"),
+        (1, "stacked_bar_distribution"),
+    ]
+    block2_real = []
+    for index, (candidate_index, chart_type) in enumerate(block2_real_sequence, start=1):
+        candidate = block2_real_candidates[candidate_index]
+        stimulus = multi_food_stimulus(candidate)
+        block2_real.append(
             make_trial(
-                trial_id=f"part2-real-{index}",
-                block_id="part2",
-                part_id="part2",
+                trial_id=f"block2-real-{index}",
+                block_id="block2",
+                part_id="part_a",
                 kind="real",
-                chart_type=key[0],
-                task_type=key[1],
-                prompt=(
-                    "For this food, which attribute is rated higher by the subgroup than the baseline?"
-                    if key[1] == "higher_than_baseline"
-                    else "For this food, which attribute differs the most between the subgroup and the baseline?"
-                ),
-                options=list(SENSE_LABELS.values()),
-                correct_answer=SENSE_LABELS[candidate.answer_key],
+                chart_type=chart_type,
+                task_type="dominant_profile_similarity",
+                answer_mode="multi_select_indices",
+                prompt=f"Which of the numbered foods match the target flavor profile: {tuple_label(candidate.target_keys)}?",
+                options=[str(food["index"]) for food in stimulus["foods"]],
+                correct_answer=[str(item) for item in candidate.correct_indices],
+                stimulus=stimulus,
+                difficulty=candidate.difficulty,
+                clarity_margin=candidate.clarity_margin,
+                developer_notes=candidate.notes,
+            )
+        )
+
+    block3_practice = [
+        make_trial(
+            trial_id="block3-practice-1",
+            block_id="block3",
+            part_id="part_a",
+            kind="practice",
+            chart_type="stacked_bar_distribution",
+            task_type="spatial_profile_comparison",
+            answer_mode="multi_select_indices",
+            prompt=f"Which of the numbered foods match the target profile: {' and '.join(SENSE_LABELS[key] for key in block3_practice_candidate.target_keys)}?",
+            options=[str(food["index"]) for food in multi_food_stimulus(block3_practice_candidate)["foods"]],
+            correct_answer=[str(index) for index in block3_practice_candidate.correct_indices],
+            stimulus=multi_food_stimulus(block3_practice_candidate),
+            difficulty=block3_practice_candidate.difficulty,
+            clarity_margin=block3_practice_candidate.clarity_margin,
+            developer_notes=block3_practice_candidate.notes,
+        )
+    ]
+
+    block3_real = []
+    for index, (candidate_index, chart_type) in enumerate(block2_real_sequence, start=1):
+        candidate = block3_real_candidates[candidate_index]
+        stimulus = multi_food_stimulus(candidate)
+        block3_real.append(
+            make_trial(
+                trial_id=f"block3-real-{index}",
+                block_id="block3",
+                part_id="part_a",
+                kind="real",
+                chart_type=chart_type,
+                task_type="spatial_profile_comparison",
+                answer_mode="multi_select_indices",
+                prompt=f"Which of the numbered foods match the target profile: {' and '.join(SENSE_LABELS[key] for key in candidate.target_keys)}?",
+                options=[str(food["index"]) for food in stimulus["foods"]],
+                correct_answer=[str(item) for item in candidate.correct_indices],
+                stimulus=stimulus,
+                difficulty=candidate.difficulty,
+                clarity_margin=candidate.clarity_margin,
+                developer_notes=candidate.notes,
+            )
+        )
+
+    block4_practice = [
+        make_trial(
+            trial_id="block4-practice-1",
+            block_id="block4",
+            part_id="part_b",
+            kind="practice",
+            chart_type="zchart",
+            task_type="distribution_comparison",
+            answer_mode="single_choice_tuple",
+            prompt="For these two populations, on which taste attributes do they differ?",
+            options=block4_practice_candidate.options,
+            correct_answer=tuple_label(block4_practice_candidate.correct_keys),
+            stimulus=comparison_stimulus(block4_practice_candidate),
+            difficulty=block4_practice_candidate.difficulty,
+            clarity_margin=block4_practice_candidate.clarity_margin,
+            developer_notes=block4_practice_candidate.notes,
+        )
+    ]
+
+    block4_real_sequence = [
+        (0, "zchart"),
+        (1, "dual_histogram"),
+        (1, "zchart"),
+        (0, "dual_histogram"),
+    ]
+    block4_real = []
+    for index, (candidate_index, chart_type) in enumerate(block4_real_sequence, start=1):
+        candidate = block4_real_candidates[candidate_index]
+        block4_real.append(
+            make_trial(
+                trial_id=f"block4-real-{index}",
+                block_id="block4",
+                part_id="part_b",
+                kind="real",
+                chart_type=chart_type,
+                task_type="distribution_comparison",
+                answer_mode="single_choice_tuple",
+                prompt="For these two populations, on which taste attributes do they differ?",
+                options=candidate.options,
+                correct_answer=tuple_label(candidate.correct_keys),
                 stimulus=comparison_stimulus(candidate),
                 difficulty=candidate.difficulty,
-                clarity_margin=candidate.margin,
+                clarity_margin=candidate.clarity_margin,
+                developer_notes=candidate.notes,
             )
-    )
+        )
 
-    part1_practice = order_trials(part1_practice)
-    part2_practice = order_trials(part2_practice)
-
-    part1_used_foods = {
-        trial_food_name(trial) for trial in part1_practice + part1_real
-    }
-    part2_used_foods = {
-        trial_food_name(trial) for trial in part2_practice + part2_real
-    }
-
-    part1_onboarding_summaries = pick_candidates(
-        ranked_summaries,
-        3,
-        lambda summary: summary.food,
-        exclude_keys=part1_used_foods,
-    )
-    part2_onboarding_candidates = pick_candidates(
-        comparison_higher_candidates + comparison_deviation_candidates,
-        2,
-        lambda candidate: candidate.food,
-        exclude_keys=part2_used_foods,
-    )
-
-    part1_onboarding_previews = [
+    block5_practice = [
         make_trial(
-            trial_id="part1-preview-bar",
-            block_id="part1",
-            part_id="part1",
+            trial_id="block5-practice-1",
+            block_id="block5",
+            part_id="part_b",
+            kind="practice",
+            chart_type="dual_histogram",
+            task_type="difference_size",
+            answer_mode="binary_choice",
+            prompt="For these two populations, are their differences significant or subtle?",
+            options=["Significant", "Subtle"],
+            correct_answer=block5_practice_candidate.magnitude_label or "Subtle",
+            stimulus=comparison_stimulus(block5_practice_candidate),
+            difficulty=block5_practice_candidate.difficulty,
+            clarity_margin=block5_practice_candidate.clarity_margin,
+            developer_notes=block5_practice_candidate.notes,
+        )
+    ]
+
+    block5_real_sequence = [
+        (0, "zchart"),
+        (1, "dual_histogram"),
+        (1, "zchart"),
+        (0, "dual_histogram"),
+    ]
+    block5_real = []
+    for index, (candidate_index, chart_type) in enumerate(block5_real_sequence, start=1):
+        candidate = block5_real_candidates[candidate_index]
+        block5_real.append(
+            make_trial(
+                trial_id=f"block5-real-{index}",
+                block_id="block5",
+                part_id="part_b",
+                kind="real",
+                chart_type=chart_type,
+                task_type="difference_size",
+                answer_mode="binary_choice",
+                prompt="For these two populations, are their differences significant or subtle?",
+                options=["Significant", "Subtle"],
+                correct_answer=candidate.magnitude_label or "Subtle",
+                stimulus=comparison_stimulus(candidate),
+                difficulty=candidate.difficulty,
+                clarity_margin=candidate.clarity_margin,
+                developer_notes=candidate.notes,
+            )
+        )
+
+    part_a_previews = [
+        make_trial(
+            trial_id="part-a-preview-radar",
+            block_id="block1",
+            part_id="part_a",
             kind="preview",
-            chart_type="grouped_bar",
+            chart_type="distribution_radar",
             task_type="tutorial_preview",
-            prompt="Onboarding preview",
+            answer_mode="none",
+            prompt="Preview",
             options=[],
             correct_answer="",
-            stimulus=outlier_stimulus(part1_onboarding_summaries[0]),
+            stimulus=single_food_stimulus(block1_preview_candidate.summary, "part-a-preview-radar"),
         ),
         make_trial(
-            trial_id="part1-preview-violin",
-            block_id="part1",
-            part_id="part1",
+            trial_id="part-a-preview-hist",
+            block_id="block1",
+            part_id="part_a",
             kind="preview",
-            chart_type="violin_plot",
+            chart_type="histogram_small_multiples",
             task_type="tutorial_preview",
-            prompt="Onboarding preview",
+            answer_mode="none",
+            prompt="Preview",
             options=[],
             correct_answer="",
-            stimulus=outlier_stimulus(part1_onboarding_summaries[1]),
+            stimulus=multi_food_stimulus(block2_preview_candidate),
         ),
         make_trial(
-            trial_id="part1-preview-radial",
-            block_id="part1",
-            part_id="part1",
+            trial_id="part-a-preview-stacked",
+            block_id="block1",
+            part_id="part_a",
             kind="preview",
-            chart_type="outlier_radar",
+            chart_type="stacked_bar_distribution",
             task_type="tutorial_preview",
-            prompt="Onboarding preview",
+            answer_mode="none",
+            prompt="Preview",
             options=[],
             correct_answer="",
-            stimulus=outlier_stimulus(part1_onboarding_summaries[2]),
+            stimulus=multi_food_stimulus(block3_preview_candidate),
         ),
     ]
 
-    part2_onboarding_previews = [
+    part_b_previews = [
         make_trial(
-            trial_id="part2-preview-overlaid",
-            block_id="part2",
-            part_id="part2",
+            trial_id="part-b-preview-zchart",
+            block_id="block4",
+            part_id="part_b",
             kind="preview",
-            chart_type="overlaid_radar",
+            chart_type="zchart",
             task_type="tutorial_preview",
-            prompt="Onboarding preview",
+            answer_mode="none",
+            prompt="Preview",
             options=[],
             correct_answer="",
-            stimulus=comparison_stimulus(part2_onboarding_candidates[0]),
+            stimulus=comparison_stimulus(block4_preview_candidate),
         ),
         make_trial(
-            trial_id="part2-preview-zglyph",
-            block_id="part2",
-            part_id="part2",
+            trial_id="part-b-preview-dual",
+            block_id="block4",
+            part_id="part_b",
             kind="preview",
-            chart_type="zglyph",
+            chart_type="dual_histogram",
             task_type="tutorial_preview",
-            prompt="Onboarding preview",
+            answer_mode="none",
+            prompt="Preview",
             options=[],
             correct_answer="",
-            stimulus=comparison_stimulus(part2_onboarding_candidates[1]),
+            stimulus=comparison_stimulus(block5_preview_candidate),
         ),
     ]
 
-    return {
-        "title": "Usability Study for Flavor Encodings",
+    blocks = [
+        {
+            "id": "block1",
+            "partId": "part_a",
+            "title": "Block 1: Distribution and Agreement",
+            "intro": "In this block, you will identify which combinations of taste attributes are most strongly supported by the ratings. Focus on overall support and agreement in the distributions rather than simply looking for the highest mean.",
+            "taskInstruction": "Select the one option that best matches the attributes most strongly supported by the shown ratings.",
+            "onboarding": [
+                {
+                    "chartType": "distribution_radar",
+                    "title": "Distribution-Aware Radial Profile",
+                    "callouts": [
+                        "The red outline summarizes the profile, while the shaded radial bands show how ratings are distributed within each taste dimension.",
+                    ],
+                },
+                {
+                    "chartType": "histogram_small_multiples",
+                    "title": "Histogram Small Multiples",
+                    "callouts": [
+                        "Each panel shows the full rating distribution for one taste attribute, making support and agreement visible directly.",
+                    ],
+                },
+                {
+                    "chartType": "stacked_bar_distribution",
+                    "title": "Stacked Bar Distribution",
+                    "callouts": [
+                        "Each stacked bar shows the share of ratings at each level for a taste attribute, from low to high.",
+                    ],
+                },
+            ],
+            "onboardingPreviewTrials": part_a_previews,
+            "practiceTrials": block1_practice,
+            "realTrials": block1_real,
+        },
+        {
+            "id": "block2",
+            "partId": "part_a",
+            "title": "Block 2: Dominant Profile Similarity",
+            "intro": "In this block, you will compare several numbered foods at once and identify which foods match a target flavor profile.",
+            "taskInstruction": "Select all numbered foods that match the target profile. Use the chart only, and submit once your checkbox choices are final.",
+            "onboarding": [],
+            "practiceTrials": block2_practice,
+            "realTrials": block2_real,
+        },
+        {
+            "id": "block3",
+            "partId": "part_a",
+            "title": "Block 3: Spatial Profile Comparison",
+            "intro": "In this block, you will identify foods that match a target profile defined by attributes in different regions of the chart space, such as one attribute on one side and another on the opposite side.",
+            "taskInstruction": "Select all numbered foods that match the target spatial profile.",
+            "onboarding": [],
+            "practiceTrials": block3_practice,
+            "realTrials": block3_real,
+            "subjectiveSection": {
+                "id": "part-a-ratings",
+                "title": "Part A Chart Evaluation",
+                "instructions": "Please rate the charts you used in Blocks 1 to 3.",
+                "charts": [
+                    {"chartType": "distribution_radar", "title": chart_title("distribution_radar")},
+                    {
+                        "chartType": "histogram_small_multiples",
+                        "title": chart_title("histogram_small_multiples"),
+                    },
+                    {
+                        "chartType": "stacked_bar_distribution",
+                        "title": chart_title("stacked_bar_distribution"),
+                    },
+                ],
+                "questions": [
+                    {
+                        "id": "easy_identify",
+                        "label": "This chart made the requested information easy to identify.",
+                    },
+                    {
+                        "id": "confidence",
+                        "label": "I felt confident in my answers when using this chart.",
+                    },
+                    {
+                        "id": "pattern_clarity",
+                        "label": "This chart clearly conveyed the relevant flavor patterns or differences.",
+                    },
+                    {
+                        "id": "visual_clutter",
+                        "label": "This chart felt visually cluttered.",
+                    },
+                ],
+                "scaleOptions": LIKERT_OPTIONS,
+            },
+        },
+        {
+            "id": "block4",
+            "partId": "part_b",
+            "title": "Block 4: Distribution Comparison",
+            "intro": "In this block, you will compare two populations and identify the taste attributes on which their distributions differ most clearly.",
+            "taskInstruction": "Select the one option that best describes where the two populations differ.",
+            "onboarding": [
+                {
+                    "chartType": "zchart",
+                    "title": "Z-Score Radar Chart",
+                    "callouts": [
+                        "The shape summarizes which attributes are above or below the reference population, and larger radial displacement indicates larger differences.",
+                    ],
+                },
+                {
+                    "chartType": "dual_histogram",
+                    "title": "Dual Histogram Comparison",
+                    "callouts": [
+                        "Each attribute shows two mirrored distributions, letting you compare where each population is concentrated at each rating level.",
+                    ],
+                },
+            ],
+            "onboardingPreviewTrials": part_b_previews,
+            "practiceTrials": block4_practice,
+            "realTrials": block4_real,
+        },
+        {
+            "id": "block5",
+            "partId": "part_b",
+            "title": "Block 5: Distribution Difference Size",
+            "intro": "In this block, you will judge whether the differences between two populations are substantial or relatively subtle.",
+            "taskInstruction": "Choose whether the shown differences are significant or subtle.",
+            "onboarding": [],
+            "practiceTrials": block5_practice,
+            "realTrials": block5_real,
+            "subjectiveSection": {
+                "id": "part-b-ratings",
+                "title": "Part B Chart Evaluation",
+                "instructions": "Please rate the charts you used in Blocks 4 and 5.",
+                "charts": [
+                    {"chartType": "zchart", "title": chart_title("zchart")},
+                    {"chartType": "dual_histogram", "title": chart_title("dual_histogram")},
+                ],
+                "questions": [
+                    {
+                        "id": "easy_identify",
+                        "label": "This chart made the requested information easy to identify.",
+                    },
+                    {
+                        "id": "confidence",
+                        "label": "I felt confident in my answers when using this chart.",
+                    },
+                    {
+                        "id": "pattern_clarity",
+                        "label": "This chart clearly conveyed the relevant flavor patterns or differences.",
+                    },
+                    {
+                        "id": "visual_clutter",
+                        "label": "This chart felt visually cluttered.",
+                    },
+                ],
+                "scaleOptions": LIKERT_OPTIONS,
+            },
+        },
+    ]
+
+    pack = {
+        "title": "Flavor Chart Interpretation Study",
         "responseEndpoint": "",
         "consentText": [
-            "**You are invited to participate in a research study on data visualization.**",
-            "The purpose of this study is to evaluate how different chart designs support interpretation of multivariate flavor data, including identifying key attributes, variability, and subgroup differences.",
-            "You will be asked to answer questions based on information shown in charts representing flavor characteristics of foods.",
-            "**The study will take approximately 8-12 minutes to complete.**",
-            "**We will record your responses and response times.**",
-            "**This study evaluates how well different visual representations support specific interpretation tasks, not personal ability.**",
-            "**Your participation is voluntary, and you may stop at any time.**",
-            "**All responses will be used for research purposes only and will remain anonymous.**",
+            "**You are invited to participate in a research study on chart interpretation.**",
+            "This study evaluates how different chart designs support interpretation of flavor-related data.",
+            "You will answer questions about rating distributions, flavor profiles, and population differences.",
+            "**Your responses and response times will be recorded.**",
+            "**This study evaluates chart readability and task support, not personal ability.**",
+            "**Participation is voluntary and you may stop at any time.**",
         ],
         "introText": [
-            "In this study, you will view charts that represent flavor characteristics of foods.",
-            "Your task is to interpret each chart and answer questions based on the information it displays.",
-            "**The study is divided into two parts:**",
-            "**Part 1** focuses on identifying dominant attributes and variability in flavor summaries.",
-            "**Part 2** focuses on comparing subgroup differences relative to a baseline.",
-            "Each part includes a brief tutorial, followed by practice trials and then main trials.",
-            "**Please answer based only on the information visible in the chart.**",
-            "**Work as accurately and quickly as possible.**",
+            "You will see several chart designs that summarize flavor ratings for foods or compare populations of raters.",
+            "Some questions ask you to identify which taste attributes are strongly supported by ratings, while others ask you to find foods matching a profile or compare differences between populations.",
+            "The study is organized into tutorials, practice trials, main study trials, and short chart rating questions.",
+            "**Please answer based only on the information visible in each chart.**",
+            "**Work as accurately and quickly as you can.**",
         ],
         "backgroundQuestions": [
             {
                 "id": "chart_familiarity",
-                "label": "How familiar are you with bar charts, violin plots, and radar charts?",
+                "label": "How familiar are you with charts such as histograms, stacked bars, and radar charts?",
                 "options": [
                     "Not at all familiar",
                     "Slightly familiar",
@@ -898,152 +1264,46 @@ def build_pack() -> dict[str, Any]:
                 ],
             },
         ],
-        "blocks": [
-            {
-                "id": "part1",
-                "partId": "part1",
-                "title": "Part 1: Flavor Summary",
-                "intro": "In this part, you will use different chart types to interpret flavor summaries of foods. You will identify attributes with the highest values and those with greater variability. You will first see a short tutorial for the charts in this part.",
-                "taskInstruction": "Select the best answer based only on the information visible in the chart.",
-                "onboarding": [
-                    {
-                        "chartType": "grouped_bar",
-                        "title": "Grouped Bar Chart",
-                        "callouts": [
-                            "Taller bars indicate larger mean ratings.",
-                        ],
-                    },
-                    {
-                        "chartType": "violin_plot",
-                        "title": "Violin Plot",
-                        "callouts": [
-                            "Wider regions indicate more ratings. Greater vertical spread indicates higher variability.",
-                        ],
-                    },
-                    {
-                        "chartType": "outlier_radar",
-                        "title": "Distribution-Aware Radial Profile",
-                        "callouts": [
-                            "The outline shows the mean. The bands show how ratings are distributed.",
-                        ],
-                    },
-                ],
-                "onboardingPreviewTrials": part1_onboarding_previews,
-                "practiceTrials": part1_practice,
-                "realTrials": part1_real,
-                "subjectiveSection": {
-                    "id": "part1-ratings",
-                    "title": "Chart Evaluation",
-                    "instructions": "Please rate each chart based on your experience in this part.",
-                    "charts": [
-                        {"chartType": "grouped_bar", "title": "Grouped Bar Chart"},
-                        {"chartType": "violin_plot", "title": "Violin Plot"},
-                        {"chartType": "outlier_radar", "title": "Distribution-Aware Radial Profile"},
-                    ],
-                    "questions": [
-                        {
-                            "id": "easy_find_info",
-                            "label": "This chart made it easy to identify the requested information.",
-                        },
-                        {
-                            "id": "confidence",
-                            "label": "I felt confident in my answers when using this chart.",
-                        },
-                        {
-                            "id": "clear_differences",
-                            "label": "This chart clearly showed differences across taste attributes.",
-                        },
-                        {
-                            "id": "visual_clutter",
-                            "label": "This chart felt visually cluttered.",
-                        },
-                    ],
-                    "scaleOptions": LIKERT_OPTIONS,
-                },
-            },
-            {
-                "id": "part2",
-                "partId": "part2",
-                "title": "Part 2: Subgroup Comparison",
-                "intro": "In this part, you will use different chart types to compare a subgroup with a baseline. You will identify which attributes are higher in the subgroup and which differ the most. You will first see a short tutorial for the charts in this part.",
-                "taskInstruction": "Select the best answer based only on the information visible in the chart.",
-                "onboarding": [
-                    {
-                        "chartType": "overlaid_radar",
-                        "title": "Overlaid Radar Chart",
-                        "callouts": [
-                            "Compare the two profiles to identify differences across attributes.",
-                        ],
-                    },
-                    {
-                        "chartType": "zglyph",
-                        "title": "Z-Score Radar Chart",
-                        "callouts": [
-                            "Direction shows above or below baseline. Larger displacement indicates larger differences.",
-                        ],
-                    },
-                ],
-                "onboardingPreviewTrials": part2_onboarding_previews,
-                "practiceTrials": part2_practice,
-                "realTrials": part2_real,
-                "subjectiveSection": {
-                    "id": "part2-ratings",
-                    "title": "Chart Evaluation",
-                    "instructions": "Please rate each chart based on your experience in this part.",
-                    "charts": [
-                        {"chartType": "overlaid_radar", "title": "Overlaid Radar Chart"},
-                        {"chartType": "zglyph", "title": "Z-Score Radar Chart"},
-                    ],
-                    "questions": [
-                        {
-                            "id": "easy_compare",
-                            "label": "This chart made it easy to identify differences between the subgroup and baseline.",
-                        },
-                        {
-                            "id": "confidence",
-                            "label": "I felt confident in my answers when using this chart.",
-                        },
-                        {
-                            "id": "clear_difference",
-                            "label": "This chart clearly showed how the subgroup differs from the baseline.",
-                        },
-                        {
-                            "id": "visual_clutter",
-                            "label": "This chart felt visually cluttered.",
-                        },
-                    ],
-                    "scaleOptions": LIKERT_OPTIONS,
-                },
-            },
-        ],
+        "blocks": blocks,
         "finalPreferenceQuestions": [
             {
-                "id": "preferred_mean",
-                "label": "Which chart did you prefer for identifying highest mean values?",
+                "id": "preferred_agreement",
+                "label": "Which chart did you prefer for understanding flavor agreement?",
                 "options": [
-                    "Grouped Bar Chart",
-                    "Distribution-Aware Radial Profile",
+                    chart_title("distribution_radar"),
+                    chart_title("histogram_small_multiples"),
+                    chart_title("stacked_bar_distribution"),
                 ],
             },
             {
-                "id": "preferred_variability",
-                "label": "Which chart did you prefer for understanding variability?",
+                "id": "preferred_profile",
+                "label": "Which chart did you prefer for identifying matching profiles?",
                 "options": [
-                    "Violin Plot",
-                    "Distribution-Aware Radial Profile",
+                    chart_title("distribution_radar"),
+                    chart_title("histogram_small_multiples"),
+                    chart_title("stacked_bar_distribution"),
                 ],
             },
             {
-                "id": "preferred_subgroup",
-                "label": "Which chart did you prefer for comparing subgroup differences?",
+                "id": "preferred_population_difference",
+                "label": "Which chart did you prefer for comparing population differences?",
                 "options": [
-                    "Overlaid Radar Chart",
-                    "Z-Score Radar Chart",
+                    chart_title("zchart"),
+                    chart_title("dual_histogram"),
                 ],
             },
         ],
         "finalCommentPrompt": "Additional comments (optional)",
+        "metadata": {
+            "chartFootprints": CHART_FOOTPRINTS,
+            "realTrialCount": sum(len(block["realTrials"]) for block in blocks),
+            "practiceTrialCount": sum(len(block["practiceTrials"]) for block in blocks),
+            "blockRealTrialCounts": {
+                block["id"]: len(block["realTrials"]) for block in blocks
+            },
+        },
     }
+    return pack
 
 
 def print_developer_summary(pack: dict[str, Any]) -> None:
@@ -1051,11 +1311,18 @@ def print_developer_summary(pack: dict[str, Any]) -> None:
     for block in pack["blocks"]:
         for trial in block["practiceTrials"] + block["realTrials"]:
             stimulus = trial["stimulus"]
+            correct_answer = trial["correctAnswer"]
+            if isinstance(correct_answer, list):
+                correct_display = ", ".join(correct_answer)
+            else:
+                correct_display = correct_answer
+            notes = "; ".join(trial.get("developerNotes", []))
             print(
                 " - "
-                f"{block['id']} | task={trial['taskType']} | chart={trial['chartType']} | "
-                f"food={stimulus['foodName']} | answer={trial['correctAnswer']} | "
-                f"margin={trial.get('clarityMargin', 'n/a')} | difficulty={trial.get('difficulty', 'n/a')}"
+                f"{block['id']} | chart={trial['chartType']} | task={trial['taskType']} | "
+                f"foods={', '.join(stimulus.get('foodNames', []))} | "
+                f"correct={correct_display} | margin={trial.get('clarityMargin', 'n/a')} | "
+                f"notes={notes}"
             )
 
 

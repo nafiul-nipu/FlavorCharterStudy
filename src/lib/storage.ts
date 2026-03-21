@@ -7,17 +7,20 @@ export type SavedTrialResponse = {
   partId?: string;
   kind: "practice" | "real";
   chartType: string;
-  promptType: string;
   taskType?: string;
-  answer: string;
-  correctAnswer: string;
+  answerMode: string;
+  userAnswer: string | string[];
+  correctAnswer: string | string[];
   isCorrect: boolean;
+  errorCount: number;
   responseTimeMs: number;
   difficulty?: string;
   trialOrderIndex?: number;
   answeredAt: string;
+  stimulusId: string;
   foodName: string;
-  subgroupLabel?: string;
+  foodNames: string[];
+  comparisonLabel?: string;
   timeSinceSessionStartMs?: number;
 };
 

@@ -413,6 +413,66 @@ code {
   margin: 0;
 }
 
+.food-panel-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.food-panel-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 10px;
+  background: #fff;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.food-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.food-panel-index {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #c2410c;
+  color: white;
+  display: inline-grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.food-panel-name {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.food-panel-chart {
+  display: grid;
+  justify-items: center;
+}
+
+.comparison-stack {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+.comparison-label-row {
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .matrix-shell {
   display: grid;
   gap: 10px;

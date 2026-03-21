@@ -7,42 +7,98 @@ export type DistributionByTaste = Record<
 >;
 
 export type ChartType =
-  | "grouped_bar"
-  | "violin_plot"
-  | "outlier_radar"
-  | "overlaid_radar"
-  | "zglyph";
+  | "distribution_radar"
+  | "histogram_small_multiples"
+  | "stacked_bar_distribution"
+  | "zchart"
+  | "dual_histogram";
 
 export type TaskType =
-  | "highest_mean"
-  | "highest_variability"
-  | "higher_than_baseline"
-  | "largest_deviation"
+  | "distribution_agreement"
+  | "dominant_profile_similarity"
+  | "spatial_profile_comparison"
+  | "distribution_comparison"
+  | "difference_size"
   | "tutorial_preview";
+
+export type AnswerMode =
+  | "single_choice_tuple"
+  | "multi_select_indices"
+  | "binary_choice"
+  | "none";
 
 export type Difficulty = "easy" | "medium" | "hard";
 
-export type OutlierStimulus = {
+export type Footprint = {
+  width: number;
+  height: number;
+  approximateArea: number;
+};
+
+export type SingleFoodStimulus = {
+  stimulusId: string;
+  stimulusKind: "single_food";
   foodName: string;
+  foodNames: string[];
   count: number;
   senses: Record<string, string>;
   valueRange: { min: number; max: number };
   meanValues: MeansByTaste;
   stdevs: StdevsByTaste;
   distribution: DistributionByTaste;
-  outliers: OutliersByTaste;
 };
 
-export type ComparisonStimulus = {
+export type FoodPanel = {
+  index: number;
   foodName: string;
   count: number;
+  meanValues: MeansByTaste;
+  stdevs: StdevsByTaste;
+  distribution: DistributionByTaste;
+};
+
+export type MultiFoodStimulus = {
+  stimulusId: string;
+  stimulusKind: "multi_food";
+  foodName: string;
+  foodNames: string[];
   senses: Record<string, string>;
   valueRange: { min: number; max: number };
-  baselineMean: MeansByTaste;
-  baselineStDev: StdevsByTaste;
-  compareMean: MeansByTaste;
-  subgroupLabel: string;
+  targetProfileKeys: string[];
+  targetProfileLabels: string[];
+  foods: FoodPanel[];
 };
+
+export type PopulationComparisonStimulus = {
+  stimulusId: string;
+  stimulusKind: "population_comparison";
+  foodName: string;
+  foodNames: string[];
+  comparisonLabel: string;
+  populationA: {
+    id: string;
+    label: string;
+    count: number;
+    meanValues: MeansByTaste;
+    stdevs: StdevsByTaste;
+    distribution: DistributionByTaste;
+  };
+  populationB: {
+    id: string;
+    label: string;
+    count: number;
+    meanValues: MeansByTaste;
+    stdevs: StdevsByTaste;
+    distribution: DistributionByTaste;
+  };
+  senses: Record<string, string>;
+  valueRange: { min: number; max: number };
+};
+
+export type TrialStimulus =
+  | SingleFoodStimulus
+  | MultiFoodStimulus
+  | PopulationComparisonStimulus;
 
 export type Trial = {
   id: string;
@@ -51,12 +107,15 @@ export type Trial = {
   kind: "practice" | "real" | "preview";
   chartType: ChartType;
   taskType: TaskType;
+  answerMode: AnswerMode;
   difficulty?: Difficulty;
   clarityMargin?: number;
   prompt: string;
   options: string[];
-  correctAnswer: string;
-  stimulus: OutlierStimulus | ComparisonStimulus;
+  correctAnswer: string | string[];
+  stimulus: TrialStimulus;
+  developerNotes?: string[];
+  footprint?: Footprint;
 };
 
 export type TutorialSection = {
@@ -106,7 +165,14 @@ export type StudyBlock = {
   onboardingPreviewTrials?: Trial[];
   practiceTrials: Trial[];
   realTrials: Trial[];
-  subjectiveSection: SubjectiveSection;
+  subjectiveSection?: SubjectiveSection;
+};
+
+export type StudyMetadata = {
+  chartFootprints: Record<ChartType, Footprint>;
+  realTrialCount: number;
+  practiceTrialCount: number;
+  blockRealTrialCounts: Record<string, number>;
 };
 
 export type StudyPack = {
@@ -118,4 +184,5 @@ export type StudyPack = {
   blocks: StudyBlock[];
   finalPreferenceQuestions: FinalPreferenceQuestion[];
   finalCommentPrompt: string;
+  metadata?: StudyMetadata;
 };
