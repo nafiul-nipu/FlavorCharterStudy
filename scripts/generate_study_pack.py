@@ -200,7 +200,11 @@ def normalize_demo_value(value: Any) -> str:
 def display_label(field: str, value: str) -> str:
     pretty = value.replace("_", " ").strip()
     if field == "gender":
-        return f"{pretty.title()} participants"
+        if pretty == "female":
+            return "Female Participants"
+        if pretty == "male":
+            return "Rest of the Population"
+        return "Participants"
     return f"{pretty.title()} participants"
 
 
@@ -1124,7 +1128,7 @@ def build_pack() -> dict[str, Any]:
             "realTrials": block3_real,
             "subjectiveSection": {
                 "id": "part-a-ratings",
-                "title": "Part A Chart Evaluation",
+                "title": "Part A and B Chart Evaluation",
                 "instructions": "Please rate the charts you used in Blocks 1 to 3.",
                 "charts": [
                     {"chartType": "distribution_radar", "title": chart_title("distribution_radar")},
@@ -1195,7 +1199,7 @@ def build_pack() -> dict[str, Any]:
             "realTrials": block5_real,
             "subjectiveSection": {
                 "id": "part-b-ratings",
-                "title": "Part B Chart Evaluation",
+                "title": "Part C Chart Evaluation",
                 "instructions": "Please rate the charts you used in Blocks 4 and 5.",
                 "charts": [
                     {"chartType": "zchart", "title": chart_title("zchart")},

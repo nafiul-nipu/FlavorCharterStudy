@@ -30,10 +30,10 @@ export default function StackedBarDistributionChart({
     (_, index) => valueRange.min + index,
   );
   const margin = {
-    top: 10,
-    right: 10,
-    bottom: 10,
-    left: width <= 180 ? 54 : width <= 260 ? 68 : 86,
+    top: 8,
+    right: 0,
+    bottom: 8,
+    left: width <= 180 ? 42 : width <= 260 ? 54 : 72,
   };
   const innerWidth = width - margin.left - margin.right;
   const rowHeight = Math.max(
@@ -44,7 +44,13 @@ export default function StackedBarDistributionChart({
   const shortLabels = width <= 180;
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-label="Stacked distribution bars">
+    <svg
+      width="100%"
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="none"
+      aria-label="Stacked distribution bars"
+    >
       <g transform={`translate(${margin.left},${margin.top})`}>
         {keys.map((key, rowIndex) => {
           const y = rowIndex * rowHeight;
@@ -53,7 +59,7 @@ export default function StackedBarDistributionChart({
           return (
             <g key={key}>
               <text
-                x={-12}
+                x={-6}
                 y={y + rowHeight * 0.62}
                 textAnchor="end"
                 fontSize={labelSize}

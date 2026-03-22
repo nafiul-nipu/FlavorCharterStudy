@@ -29,19 +29,23 @@ export default function HistogramSmallMultiples({
   const columns = Math.min(5, Math.max(2, keys.length >= 5 ? 5 : keys.length));
   const rows = Math.ceil(keys.length / columns);
   const gap = 10;
-  const panelWidth = Math.max(96, Math.floor((width - gap * (columns - 1)) / columns));
+  const panelViewWidth = width <= 180 ? 78 : width <= 320 ? 88 : 96;
   const targetPanelHeight = Math.floor((height - gap * Math.max(rows - 1, 0)) / rows);
-  const panelHeight = Math.max(42, Math.min(78, targetPanelHeight));
+  const panelHeight = Math.max(42, Math.min(82, targetPanelHeight));
   const innerHeight = Math.max(20, panelHeight - 18);
-  const chartWidth = panelWidth - 12;
-  const barWidth = Math.max(7, Math.floor((chartWidth - 20) / levels.length));
+  const chartLeft = 0;
+  const barGap = 0;
+  const usableWidth = panelViewWidth;
+  const barWidth = Math.max(
+    4,
+    Math.floor((usableWidth - barGap * (levels.length - 1)) / levels.length),
+  );
   const shortLabels = width <= 180;
 
   return (
     <div
       style={{
-        width,
-        maxWidth: "100%",
+        width: "100%",
         display: "grid",
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
         gap,
@@ -52,12 +56,12 @@ export default function HistogramSmallMultiples({
           <div
             key={key}
             style={{
-              width: panelWidth,
-              padding: "6px 6px 8px",
+              width: "100%",
+              minWidth: 0,
+              padding: "2px 0 4px",
               borderRadius: 12,
               border: "1px solid #e2e8f0",
               background: "#fff",
-              justifySelf: "center",
             }}
           >
             <div
@@ -72,18 +76,23 @@ export default function HistogramSmallMultiples({
             >
               {shortLabels ? senses[key].slice(0, 3) : senses[key]}
             </div>
-            <svg width="100%" height={panelHeight} viewBox={`0 0 ${chartWidth} ${panelHeight}`}>
+            <svg
+              width="100%"
+              height={panelHeight}
+              viewBox={`0 0 ${panelViewWidth} ${panelHeight}`}
+              preserveAspectRatio="none"
+            >
               {levels.map((level, index) => {
                 const percent = distribution[key]?.[String(level)]?.percent ?? 0;
                 const barHeight = (percent / maxPercent) * innerHeight;
-                const x = 10 + index * barWidth;
-                const y = innerHeight - barHeight + 4;
+                const x = chartLeft + index * (barWidth + barGap);
+                const y = innerHeight - barHeight + 2;
                 return (
                   <g key={`${key}-${level}`}>
                     <rect
-                      x={x + 1}
+                      x={x}
                       y={y}
-                      width={Math.max(6, barWidth - 2)}
+                      width={barWidth}
                       height={barHeight}
                       rx={2}
                       fill="#0f766e"
@@ -93,7 +102,7 @@ export default function HistogramSmallMultiples({
                       x={x + barWidth / 2}
                       y={panelHeight - 2}
                       textAnchor="middle"
-                      fontSize="6.5"
+                      fontSize="5.5"
                       fill="#475569"
                     >
                       {level}

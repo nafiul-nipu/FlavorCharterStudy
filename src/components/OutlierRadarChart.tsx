@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { useEffect, useId, useRef } from "react";
 
 const MAX_CHART_SIZE = 230;
-const extraMargin = 20;
+const extraMargin = 12;
 
 type DistributionBucket = { count?: number; percent?: number };
 type DistributionByTaste = Partial<
@@ -72,6 +72,8 @@ export default function OutlierRadarChart({
   }, [hasDistribution]);
 
   const radius = size / 2;
+  const labelRadius = radius + (showLabels ? Math.max(2, Math.min(5, size * 0.03)) : 0);
+  const labelFontSize = showLabels ? Math.max(8, Math.min(11, size * 0.07)) : 0;
   const totalDimensions = labels.length;
   const sliceAngle = totalDimensions ? (2 * Math.PI) / totalDimensions : 0;
   const wedgeGap = 0.03;
@@ -184,8 +186,6 @@ export default function OutlierRadarChart({
   }
 
   function renderCurvedLabels() {
-    const labelRadius = radius + 5;
-
     return labels.map((label, i) => {
       const angleStart = (i + 1) * sliceAngle - wedgeGap;
       const angleEnd = i * sliceAngle + wedgeGap;
@@ -205,7 +205,7 @@ export default function OutlierRadarChart({
           <defs>
             <path id={arcId} d={arcPath ?? ""} fill="none" />
           </defs>
-          <text fontSize="12" fill="#333">
+          <text fontSize={labelFontSize} fill="#333">
             <textPath href={`#${arcId}`} startOffset="30%" textAnchor="middle">
               {label}
             </textPath>
@@ -273,9 +273,9 @@ export default function OutlierRadarChart({
       <svg
         width={size + extraMargin * 2}
         height={size + extraMargin * 2}
-        viewBox={`-${radius + extraMargin} -${radius + extraMargin} ${
-          size + extraMargin * 2
-        } ${size + extraMargin * 2}`}
+        viewBox={`-${labelRadius + extraMargin} -${labelRadius + extraMargin} ${
+          (labelRadius + extraMargin) * 2
+        } ${(labelRadius + extraMargin) * 2}`}
       >
         {renderDistributionArcs()}
         {Array.from({ length: ringCount }, (_, idx) => {

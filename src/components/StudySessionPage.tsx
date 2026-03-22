@@ -43,7 +43,7 @@ type Step =
 
 type TutorialGroup = {
   id: "group1" | "group2" | "group3";
-  partLabel: "Part A" | "Part B";
+  partLabel: "Part A" | "Part B" | "Part C";
   title: string;
   intro: string;
   blocks: StudyBlock[];
@@ -547,9 +547,22 @@ export default function StudySessionPage() {
                   {currentStep.block.title} ({chartDisplayName(currentStep.trial.chartType)})
                 </h2>
                 <p className="muted">{currentStep.block.taskInstruction}</p>
-                <p className="trial-question">
-                  <strong>{currentStep.trial.prompt}</strong>
-                </p>
+                <div
+                  className={`trial-question-row ${
+                    currentStep.trial.answerMode === "multi_select_indices"
+                      ? "with-support"
+                      : ""
+                  }`}
+                >
+                  <p className="trial-question">
+                    <strong>{currentStep.trial.prompt}</strong>
+                  </p>
+                  {currentStep.trial.answerMode === "multi_select_indices" ? (
+                    <div className="trial-question-support">
+                      <ChartLegend chartType={currentStep.trial.chartType} compact="mini" />
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </div>
 
@@ -560,6 +573,9 @@ export default function StudySessionPage() {
                     trial={currentStep.trial}
                     activeMultiAnswer={activeMultiAnswer}
                     onToggleMulti={toggleMultiAnswer}
+                    onSubmit={() => submitTrial(currentStep.trial)}
+                    canSubmit={canSubmit}
+                    feedback={feedback}
                   />
                 ) : (
                   <ChartRenderer
@@ -598,43 +614,22 @@ export default function StudySessionPage() {
               )}
             </div>
 
-            {currentStep.trial.answerMode === "multi_select_indices" ? (
-              <div className="trial-action-bar">
-                <div className="action-summary muted small">
-                  {`Selected indices: ${
-                    activeMultiAnswer.length ? activeMultiAnswer.join(", ") : "None yet"
-                  }`}
-                </div>
-                <div className="action-controls">
-                  <button
-                    className="primary-button"
-                    onClick={() => submitTrial(currentStep.trial)}
-                    disabled={!canSubmit}
-                  >
-                    Submit answer
-                  </button>
-                  {feedback ? (
-                    <p className={feedback === "Correct" ? "success-text" : "error-text"}>
-                      {feedback}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
           </article>
         ) : null}
 
         {currentStep.type === "subjective" && currentStep.block.subjectiveSection ? (
-          <article className="card fixed-screen-card survey-card">
+          <article className="card fixed-screen-card survey-card subjective-card">
             <h2>{currentStep.block.subjectiveSection.title}</h2>
             <p className="muted">{currentStep.block.subjectiveSection.instructions}</p>
-            <SubjectiveMatrix
-              section={currentStep.block.subjectiveSection}
-              values={(session.subjectiveAnswers ?? {})[currentStep.block.id] ?? {}}
-              onChange={(chartType, questionId, value) =>
-                updateSubjectiveAnswer(currentStep.block.id, chartType, questionId, value)
-              }
-            />
+            <div className="subjective-scroll">
+              <SubjectiveMatrix
+                section={currentStep.block.subjectiveSection}
+                values={(session.subjectiveAnswers ?? {})[currentStep.block.id] ?? {}}
+                onChange={(chartType, questionId, value) =>
+                  updateSubjectiveAnswer(currentStep.block.id, chartType, questionId, value)
+                }
+              />
+            </div>
             <button
               className="primary-button"
               onClick={goToNextStep}
@@ -789,10 +784,16 @@ function MultiSelectCardGrid({
   trial,
   activeMultiAnswer,
   onToggleMulti,
+  onSubmit,
+  canSubmit,
+  feedback,
 }: {
   trial: Trial;
   activeMultiAnswer: string[];
   onToggleMulti: (value: string) => void;
+  onSubmit: () => void;
+  canSubmit: boolean;
+  feedback: string;
 }) {
   if (trial.stimulus.stimulusKind !== "multi_food") {
     return null;
@@ -800,7 +801,6 @@ function MultiSelectCardGrid({
 
   return (
     <div className="multi-select-frame">
-      <ChartLegend chartType={trial.chartType} />
       <div className="food-panel-grid selectable-food-grid">
         {trial.stimulus.foods.map((food) => {
           const option = String(food.index);
@@ -821,23 +821,27 @@ function MultiSelectCardGrid({
                 <span className="food-panel-index">{food.index}</span>
                 <span className="food-panel-name">{food.foodName}</span>
               </div>
-              <div className="food-panel-chart">
+              <div
+                className={`food-panel-chart ${
+                  trial.chartType === "distribution_radar" ? "radial-food-panel-chart" : ""
+                }`}
+              >
                 {trial.chartType === "distribution_radar" ? (
                   <OutlierRadarChart
                     senses={trial.stimulus.senses}
                     meanValues={food.meanValues}
                     distribution={food.distribution}
                     showOutliers={false}
-                    size={126}
+                    size={125}
                     valueRange={trial.stimulus.valueRange}
-                    showLabels={false}
+                    showLabels
                   />
                 ) : trial.chartType === "histogram_small_multiples" ? (
                   <HistogramSmallMultiples
                     senses={trial.stimulus.senses}
                     distribution={food.distribution}
                     width={210}
-                    height={132}
+                    height={96}
                     valueRange={trial.stimulus.valueRange}
                   />
                 ) : (
@@ -845,7 +849,7 @@ function MultiSelectCardGrid({
                     senses={trial.stimulus.senses}
                     distribution={food.distribution}
                     width={210}
-                    height={132}
+                    height={148}
                     valueRange={trial.stimulus.valueRange}
                   />
                 )}
@@ -853,6 +857,21 @@ function MultiSelectCardGrid({
             </label>
           );
         })}
+        <div className="food-panel-card action-food-card">
+          <div className="action-food-card-body">
+            <p className="muted small">
+              Selected indices: {activeMultiAnswer.length ? activeMultiAnswer.join(", ") : "None yet"}
+            </p>
+            <button className="primary-button" onClick={onSubmit} disabled={!canSubmit}>
+              Submit answer
+            </button>
+            {feedback ? (
+              <p className={feedback === "Correct" ? "success-text" : "error-text"}>
+                {feedback}
+              </p>
+            ) : null}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -958,15 +977,16 @@ function SubjectiveMatrix({
   values: Record<string, Record<string, string>>;
   onChange: (chartType: string, questionId: string, value: string) => void;
 }) {
+  const gridTemplateColumns = `minmax(220px, 1.1fr) repeat(${section.charts.length}, minmax(150px, 1fr))`;
   return (
     <div className="matrix-shell">
       <div
-        className="matrix-grid"
-        style={{
-          gridTemplateColumns: `minmax(220px, 1.1fr) repeat(${section.charts.length}, minmax(150px, 1fr))`,
-        }}
+        className="matrix-grid matrix-header-grid"
+        style={{ gridTemplateColumns }}
       >
-        <div className="matrix-head">Question</div>
+        <div className="matrix-head">
+          Question <span className="matrix-head-note">(Scale: 1 = strongly disagree, 5 = strongly agree.)</span>
+        </div>
         {section.charts.map((chart) => (
           <div key={chart.chartType} className="matrix-head matrix-chart-head">
             <div className="matrix-preview-card">
@@ -975,32 +995,35 @@ function SubjectiveMatrix({
             </div>
           </div>
         ))}
-
-        {section.questions.map((question) => (
-          <Fragment key={question.id}>
-            <div key={`${question.id}-label`} className="matrix-label">
-              {question.label}
-            </div>
-            {section.charts.map((chart) => (
-              <div key={`${question.id}-${chart.chartType}`} className="matrix-cell">
-                <select
-                  className="likert-select"
-                  value={values[chart.chartType]?.[question.id] ?? ""}
-                  onChange={(event) => onChange(chart.chartType, question.id, event.target.value)}
-                >
-                  <option value="">Rate</option>
-                  {section.scaleOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ))}
-          </Fragment>
-        ))}
       </div>
-      <p className="muted small">Scale: 1 = strongly disagree, 5 = strongly agree.</p>
+
+      <div className="matrix-body-scroll">
+        <div className="matrix-grid matrix-body-grid" style={{ gridTemplateColumns }}>
+          {section.questions.map((question) => (
+            <Fragment key={question.id}>
+              <div key={`${question.id}-label`} className="matrix-label">
+                {question.label}
+              </div>
+              {section.charts.map((chart) => (
+                <div key={`${question.id}-${chart.chartType}`} className="matrix-cell">
+                  <select
+                    className="likert-select"
+                    value={values[chart.chartType]?.[question.id] ?? ""}
+                    onChange={(event) => onChange(chart.chartType, question.id, event.target.value)}
+                  >
+                    <option value="">Rate</option>
+                    {section.scaleOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </Fragment>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1209,6 +1232,69 @@ function SubjectiveChartPreview({ chartType }: { chartType: ChartType }) {
   return <ReferenceFigure chartType={chartType} compact="mini" />;
 }
 
+const RADIAL_REFERENCE_SENSES = {
+  sweet: "Sweet",
+  sour: "Sour",
+  salty: "Salty",
+  bitter: "Bitter",
+  aromatic: "Aromatic",
+  texture: "Texture",
+};
+
+const RADIAL_REFERENCE_MEANS = {
+  sweet: 2.4,
+  sour: 1.1,
+  salty: 4.2,
+  bitter: 1.5,
+  aromatic: 3.2,
+  texture: 2.8,
+};
+
+const RADIAL_REFERENCE_DISTRIBUTION = {
+  sweet: {
+    "0": { count: 1, percent: 5 },
+    "1": { count: 3, percent: 15 },
+    "2": { count: 6, percent: 30 },
+    "3": { count: 7, percent: 35 },
+    "4": { count: 3, percent: 15 },
+  },
+  sour: {
+    "0": { count: 6, percent: 30 },
+    "1": { count: 7, percent: 35 },
+    "2": { count: 4, percent: 20 },
+    "3": { count: 2, percent: 10 },
+    "4": { count: 1, percent: 5 },
+  },
+  salty: {
+    "1": { count: 2, percent: 10 },
+    "2": { count: 3, percent: 15 },
+    "3": { count: 5, percent: 25 },
+    "4": { count: 6, percent: 30 },
+    "5": { count: 4, percent: 20 },
+  },
+  bitter: {
+    "0": { count: 4, percent: 20 },
+    "1": { count: 6, percent: 30 },
+    "2": { count: 5, percent: 25 },
+    "3": { count: 3, percent: 15 },
+    "4": { count: 2, percent: 10 },
+  },
+  aromatic: {
+    "1": { count: 2, percent: 10 },
+    "2": { count: 4, percent: 20 },
+    "3": { count: 6, percent: 30 },
+    "4": { count: 5, percent: 25 },
+    "5": { count: 3, percent: 15 },
+  },
+  texture: {
+    "0": { count: 2, percent: 10 },
+    "1": { count: 3, percent: 15 },
+    "2": { count: 5, percent: 25 },
+    "3": { count: 6, percent: 30 },
+    "4": { count: 4, percent: 20 },
+  },
+};
+
 function ReferenceFigure({
   chartType,
   compact = "mini",
@@ -1221,13 +1307,15 @@ function ReferenceFigure({
 
   if (chartType === "distribution_radar") {
     return (
-      <svg width={width} height={height} viewBox="0 0 180 120" aria-label={chartDisplayName(chartType)}>
-        <circle cx="90" cy="60" r="18" fill="none" stroke="#e2e8f0" />
-        <circle cx="90" cy="60" r="34" fill="none" stroke="#e2e8f0" />
-        <circle cx="90" cy="60" r="50" fill="none" stroke="#e2e8f0" />
-        <polygon points="90,15 128,34 140,70 108,100 72,102 40,72 48,34" fill="rgba(245,158,11,0.24)" />
-        <polyline points="90,22 120,38 130,68 106,88 74,90 50,66 58,38 90,22" fill="none" stroke="#dc2626" strokeWidth="3" />
-      </svg>
+      <OutlierRadarChart
+        senses={RADIAL_REFERENCE_SENSES}
+        meanValues={RADIAL_REFERENCE_MEANS}
+        distribution={RADIAL_REFERENCE_DISTRIBUTION}
+        showOutliers={false}
+        size={compact === "onboarding" ? 94 : compact === "survey" ? 74 : 64}
+        valueRange={{ min: 0, max: 5 }}
+        showLabels={false}
+      />
     );
   }
 
@@ -1407,7 +1495,7 @@ function renderMultiFoodVisualization(
               meanValues={food.meanValues}
               distribution={food.distribution}
               showOutliers={false}
-              size={compact === "mini" ? 100 : compact === "onboarding" ? 138 : 126}
+              size={compact === "mini" ? 100 : compact === "onboarding" ? 164 : 126}
               valueRange={stimulus.valueRange}
               showLabels={compact !== "mini"}
             />
@@ -1415,16 +1503,16 @@ function renderMultiFoodVisualization(
             <HistogramSmallMultiples
               senses={stimulus.senses}
               distribution={food.distribution}
-              width={compact === "mini" ? 156 : compact === "onboarding" ? 184 : 210}
-              height={compact === "mini" ? 92 : compact === "onboarding" ? 108 : 132}
+              width={compact === "mini" ? 156 : compact === "onboarding" ? 252 : 210}
+              height={compact === "mini" ? 92 : compact === "onboarding" ? 158 : 132}
               valueRange={stimulus.valueRange}
             />
           ) : (
             <StackedBarDistributionChart
               senses={stimulus.senses}
               distribution={food.distribution}
-              width={compact === "mini" ? 156 : compact === "onboarding" ? 184 : 210}
-              height={compact === "mini" ? 92 : compact === "onboarding" ? 108 : 132}
+              width={compact === "mini" ? 156 : compact === "onboarding" ? 252 : 210}
+              height={compact === "mini" ? 92 : compact === "onboarding" ? 158 : 132}
               valueRange={stimulus.valueRange}
             />
           )}
@@ -1452,7 +1540,7 @@ function renderPopulationComparison(
           baselineMean={stimulus.populationA.meanValues}
           baselineStDev={stimulus.populationA.stdevs}
           compareMean={stimulus.populationB.meanValues}
-          size={compact === "onboarding" ? 250 : compact === "mini" ? 140 : 235}
+          size={compact === "onboarding" ? 320 : compact === "mini" ? 140 : 235}
         />
       </div>
     );
@@ -1475,8 +1563,8 @@ function renderPopulationComparison(
           label: stimulus.populationB.label,
           distribution: stimulus.populationB.distribution,
         }}
-        width={compact === "onboarding" ? 420 : compact === "mini" ? 170 : 760}
-        height={compact === "onboarding" ? 280 : compact === "mini" ? 120 : 320}
+        width={compact === "onboarding" ? 620 : compact === "mini" ? 170 : 760}
+        height={compact === "onboarding" ? 340 : compact === "mini" ? 120 : 320}
         valueRange={stimulus.valueRange}
       />
     </div>
@@ -1566,7 +1654,7 @@ function buildTutorialGroups(pack: StudyPack): TutorialGroup[] {
     },
     {
       id: "group2",
-      partLabel: "Part A",
+      partLabel: "Part B",
       title: "Group 2: Profile Matching Across Foods",
       intro:
         "This group covers profile similarity and spatial profile comparison across several foods using all three small-multiple chart types.",
@@ -1586,7 +1674,7 @@ function buildTutorialGroups(pack: StudyPack): TutorialGroup[] {
     },
     {
       id: "group3",
-      partLabel: "Part B",
+      partLabel: "Part C",
       title: "Group 3: Population Comparison",
       intro:
         "This group covers subgroup distribution comparison and difference magnitude with the z-score radar and the dual distribution comparison view.",

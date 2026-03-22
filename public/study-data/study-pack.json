@@ -24835,7 +24835,7 @@
       ],
       "subjectiveSection": {
         "id": "part-a-ratings",
-        "title": "Part A Chart Evaluation",
+        "title": "Part A and B Chart Evaluation",
         "instructions": "Please rate the charts you used in Blocks 1 to 3.",
         "charts": [
           {
@@ -24919,10 +24919,10 @@
             "foodNames": [
               "Orange Juice"
             ],
-            "comparisonLabel": "Female participants vs Male participants",
+            "comparisonLabel": "Female Participants vs Rest of the Population",
             "populationA": {
               "id": "gender:female",
-              "label": "Female participants",
+              "label": "Female Participants",
               "count": 13,
               "meanValues": {
                 "Sweetness": 3.31,
@@ -25213,7 +25213,7 @@
             },
             "populationB": {
               "id": "gender:male",
-              "label": "Male participants",
+              "label": "Rest of the Population",
               "count": 21,
               "meanValues": {
                 "Sweetness": 2.86,
@@ -25543,10 +25543,10 @@
             "foodNames": [
               "Dark Chocolate"
             ],
-            "comparisonLabel": "Female participants vs Male participants",
+            "comparisonLabel": "Female Participants vs Rest of the Population",
             "populationA": {
               "id": "gender:female",
-              "label": "Female participants",
+              "label": "Female Participants",
               "count": 24,
               "meanValues": {
                 "Sweetness": 1.92,
@@ -25837,7 +25837,7 @@
             },
             "populationB": {
               "id": "gender:male",
-              "label": "Male participants",
+              "label": "Rest of the Population",
               "count": 34,
               "meanValues": {
                 "Sweetness": 1.47,
@@ -29995,10 +29995,10 @@
             "foodNames": [
               "Black Tea"
             ],
-            "comparisonLabel": "Female participants vs Male participants",
+            "comparisonLabel": "Female Participants vs Rest of the Population",
             "populationA": {
               "id": "gender:female",
-              "label": "Female participants",
+              "label": "Female Participants",
               "count": 16,
               "meanValues": {
                 "Sweetness": 0.56,
@@ -30289,7 +30289,7 @@
             },
             "populationB": {
               "id": "gender:male",
-              "label": "Male participants",
+              "label": "Rest of the Population",
               "count": 17,
               "meanValues": {
                 "Sweetness": 0.59,
@@ -31897,10 +31897,10 @@
             "foodNames": [
               "Black Tea"
             ],
-            "comparisonLabel": "Female participants vs Male participants",
+            "comparisonLabel": "Female Participants vs Rest of the Population",
             "populationA": {
               "id": "gender:female",
-              "label": "Female participants",
+              "label": "Female Participants",
               "count": 16,
               "meanValues": {
                 "Sweetness": 0.56,
@@ -32191,7 +32191,7 @@
             },
             "populationB": {
               "id": "gender:male",
-              "label": "Male participants",
+              "label": "Rest of the Population",
               "count": 17,
               "meanValues": {
                 "Sweetness": 0.59,
@@ -32513,7 +32513,7 @@
       ],
       "subjectiveSection": {
         "id": "part-b-ratings",
-        "title": "Part B Chart Evaluation",
+        "title": "Part C Chart Evaluation",
         "instructions": "Please rate the charts you used in Blocks 4 and 5.",
         "charts": [
           {
