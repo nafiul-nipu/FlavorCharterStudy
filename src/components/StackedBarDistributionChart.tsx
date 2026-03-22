@@ -29,9 +29,19 @@ export default function StackedBarDistributionChart({
     { length: valueRange.max - valueRange.min + 1 },
     (_, index) => valueRange.min + index,
   );
-  const margin = { top: 16, right: 16, bottom: 18, left: 96 };
+  const margin = {
+    top: 10,
+    right: 10,
+    bottom: 10,
+    left: width <= 180 ? 54 : width <= 260 ? 68 : 86,
+  };
   const innerWidth = width - margin.left - margin.right;
-  const rowHeight = Math.max(18, Math.floor((height - margin.top - margin.bottom) / keys.length));
+  const rowHeight = Math.max(
+    8,
+    Math.floor((height - margin.top - margin.bottom) / keys.length),
+  );
+  const labelSize = width <= 180 ? 6.5 : width <= 260 ? 7.5 : 9;
+  const shortLabels = width <= 180;
 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-label="Stacked distribution bars">
@@ -46,10 +56,10 @@ export default function StackedBarDistributionChart({
                 x={-12}
                 y={y + rowHeight * 0.62}
                 textAnchor="end"
-                fontSize="10"
+                fontSize={labelSize}
                 fill="#334155"
               >
-                {senses[key]}
+                {shortLabels ? senses[key].slice(0, 3) : senses[key]}
               </text>
               {levels.map((level) => {
                 const percent = distribution[key]?.[String(level)]?.percent ?? 0;
@@ -58,9 +68,9 @@ export default function StackedBarDistributionChart({
                   <rect
                     key={`${key}-${level}`}
                     x={currentX}
-                    y={y + 2}
+                    y={y + 1}
                     width={segmentWidth}
-                    height={Math.max(12, rowHeight - 6)}
+                    height={Math.max(6, rowHeight - 2)}
                     fill={LEVEL_COLORS[level] ?? LEVEL_COLORS[LEVEL_COLORS.length - 1]}
                     stroke="rgba(255,255,255,0.8)"
                     strokeWidth={0.8}

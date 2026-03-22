@@ -32,14 +32,26 @@ type Step =
   | { type: "consent" }
   | { type: "background" }
   | { type: "intro" }
-  | { type: "blockIntro"; block: StudyBlock }
-  | { type: "onboarding"; block: StudyBlock; screenIndex: number }
-  | { type: "practiceIntro"; block: StudyBlock }
+  | { type: "groupIntro"; group: TutorialGroup }
+  | { type: "onboarding"; group: TutorialGroup; screenIndex: number }
+  | { type: "practiceIntro"; group: TutorialGroup }
   | { type: "trial"; block: StudyBlock; trial: Trial }
-  | { type: "realIntro"; block: StudyBlock }
+  | { type: "realIntro"; group: TutorialGroup }
   | { type: "subjective"; block: StudyBlock }
   | { type: "finalSurvey" }
   | { type: "complete" };
+
+type TutorialGroup = {
+  id: "group1" | "group2" | "group3";
+  partLabel: "Part A" | "Part B";
+  title: string;
+  intro: string;
+  blocks: StudyBlock[];
+  tutorialCharts: ChartType[];
+  tutorialTrials: Trial[];
+  practiceTrial: Trial;
+  subjectiveBlock?: StudyBlock;
+};
 
 type SubmissionState = {
   status: "idle" | "submitting" | "submitted" | "error";
@@ -122,22 +134,26 @@ export default function StudySessionPage() {
 
   const steps = useMemo<Step[]>(() => {
     if (!pack) return [];
+    const groups = buildTutorialGroups(pack);
     const items: Step[] = [{ type: "consent" }, { type: "background" }, { type: "intro" }];
-    for (const block of pack.blocks) {
-      items.push({ type: "blockIntro", block });
-      block.onboarding.forEach((_, screenIndex) => {
-        items.push({ type: "onboarding", block, screenIndex });
+    for (const group of groups) {
+      items.push({ type: "groupIntro", group });
+      group.tutorialCharts.forEach((_, screenIndex) => {
+        items.push({ type: "onboarding", group, screenIndex });
       });
-      items.push({ type: "practiceIntro", block });
-      for (const trial of block.practiceTrials) {
-        items.push({ type: "trial", block, trial });
+      items.push({ type: "practiceIntro", group });
+      const practiceBlock =
+        group.blocks.find((block) => block.id === group.practiceTrial.blockId) ??
+        group.blocks[0];
+      items.push({ type: "trial", block: practiceBlock, trial: group.practiceTrial });
+      items.push({ type: "realIntro", group });
+      for (const block of group.blocks) {
+        for (const trial of block.realTrials) {
+          items.push({ type: "trial", block, trial });
+        }
       }
-      items.push({ type: "realIntro", block });
-      for (const trial of block.realTrials) {
-        items.push({ type: "trial", block, trial });
-      }
-      if (block.subjectiveSection) {
-        items.push({ type: "subjective", block });
+      if (group.subjectiveBlock?.subjectiveSection) {
+        items.push({ type: "subjective", block: group.subjectiveBlock });
       }
     }
     items.push({ type: "finalSurvey" }, { type: "complete" });
@@ -461,29 +477,25 @@ export default function StudySessionPage() {
           </article>
         ) : null}
 
-        {currentStep.type === "blockIntro" ? (
+        {currentStep.type === "groupIntro" ? (
           <article className="card">
-            <p className="eyebrow">
-              {currentStep.block.partId === "part_a" ? "Part A" : "Part B"}
-            </p>
-            <h2>{currentStep.block.title}</h2>
-            <p className="muted">{currentStep.block.intro}</p>
+            <p className="eyebrow">{currentStep.group.partLabel}</p>
+            <h2>{currentStep.group.title}</h2>
+            <p className="muted">{currentStep.group.intro}</p>
             <p className="muted">
-              {currentStep.block.onboarding.length
-                ? "You will first see a short tutorial for the chart family used in this section."
-                : "You can now begin practice for this block."}
+              You will see all chart types used in this group before practice begins.
             </p>
             <button className="primary-button" onClick={goToNextStep}>
-              {currentStep.block.onboarding.length ? "Start Tutorial" : "Start Practice"}
+              Start Tutorial
             </button>
           </article>
         ) : null}
 
         {currentStep.type === "onboarding" ? (
           <OnboardingScreen
-            block={currentStep.block}
+            group={currentStep.group}
             screenIndex={currentStep.screenIndex}
-            previewTrial={onboardingPreviewForStep(currentStep.block, currentStep.screenIndex)}
+            previewTrial={onboardingPreviewForStep(currentStep.group, currentStep.screenIndex)}
             onBack={goToPreviousStep}
             onNext={goToNextStep}
             onSkip={() => skipOnboarding(steps, currentStep, setSession)}
@@ -493,9 +505,9 @@ export default function StudySessionPage() {
         {currentStep.type === "practiceIntro" ? (
           <article className="card">
             <p className="eyebrow">Practice</p>
-            <h2>{currentStep.block.title}</h2>
+            <h2>{currentStep.group.title}</h2>
             <p className="muted">
-              You will now begin the practice example for this block.
+              You will now begin the practice example for this group.
             </p>
             <p className="muted">Practice responses give immediate correctness feedback.</p>
             <button className="primary-button" onClick={goToNextStep}>
@@ -507,10 +519,10 @@ export default function StudySessionPage() {
         {currentStep.type === "realIntro" ? (
           <article className="card">
             <p className="eyebrow">Main Study</p>
-            <h2>{currentStep.block.title}</h2>
+            <h2>{currentStep.group.title}</h2>
             <p className="muted">You have finished the practice example.</p>
             <p className="muted">
-              The next screens are the main study questions. Feedback will no longer be shown.
+              The next screens are the main study questions for this group. Feedback will no longer be shown.
             </p>
             <button className="primary-button" onClick={goToNextStep}>
               Start Main Trials
@@ -519,7 +531,7 @@ export default function StudySessionPage() {
         ) : null}
 
         {currentStep.type === "trial" ? (
-          <article className="card trial-layout">
+          <article className="card fixed-screen-card trial-layout">
             <div className="trial-meta">
               <div>
                 <p className="eyebrow">
@@ -574,7 +586,7 @@ export default function StudySessionPage() {
         ) : null}
 
         {currentStep.type === "subjective" && currentStep.block.subjectiveSection ? (
-          <article className="card">
+          <article className="card fixed-screen-card survey-card">
             <h2>{currentStep.block.subjectiveSection.title}</h2>
             <p className="muted">{currentStep.block.subjectiveSection.instructions}</p>
             <SubjectiveMatrix
@@ -601,30 +613,38 @@ export default function StudySessionPage() {
         ) : null}
 
         {currentStep.type === "finalSurvey" ? (
-          <article className="card">
+          <article className="card fixed-screen-card survey-card final-survey-card">
             <h2>Final questions</h2>
-            <div className="question-grid">
+            <div className="question-grid final-preference-grid">
               {pack.finalPreferenceQuestions.map((question) => (
                 <fieldset key={question.id} className="question-group">
                   <legend>{question.label}</legend>
-                  {question.options.map((option) => (
-                    <label key={option} className="option-row">
-                      <input
-                        type="radio"
-                        name={question.id}
-                        checked={(session.finalPreferences ?? {})[question.id] === option}
-                        onChange={() => updateFinalPreference(question.id, option)}
-                      />
-                      <span>{option}</span>
-                    </label>
-                  ))}
+                  <div className="reference-option-grid">
+                    {question.options.map((option) => (
+                      <label key={option} className="reference-option-row">
+                        <input
+                          type="radio"
+                          name={question.id}
+                          checked={(session.finalPreferences ?? {})[question.id] === option}
+                          onChange={() => updateFinalPreference(question.id, option)}
+                        />
+                        <span className="reference-option-card">
+                          <span className="reference-option-title">{option}</span>
+                          <ReferenceFigure
+                            chartType={chartTypeFromOptionLabel(option)}
+                            compact="survey"
+                          />
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </fieldset>
               ))}
             </div>
             <label className="question-group" style={{ display: "grid", gap: 8 }}>
               <span>{pack.finalCommentPrompt}</span>
               <textarea
-                rows={4}
+                rows={3}
                 value={session.finalComment ?? ""}
                 onChange={(event) =>
                   setSession((prev) => ({
@@ -765,51 +785,45 @@ function FormattedParagraph({
 }
 
 function OnboardingScreen({
-  block,
+  group,
   screenIndex,
   previewTrial,
   onBack,
   onNext,
   onSkip,
 }: {
-  block: StudyBlock;
+  group: TutorialGroup;
   screenIndex: number;
   previewTrial?: Trial;
   onBack: () => void;
   onNext: () => void;
   onSkip: () => void;
 }) {
-  const section = block.onboarding[screenIndex];
+  const chartType = group.tutorialCharts[screenIndex];
   const isFirst = screenIndex === 0;
-  const isLast = screenIndex === block.onboarding.length - 1;
+  const isLast = screenIndex === group.tutorialCharts.length - 1;
+  const partLabel = group.partLabel;
 
   return (
-    <article className="card onboarding-card">
+    <article className="card fixed-screen-card onboarding-card">
       <div className="onboarding-stage">
         <div className="onboarding-copy">
           <p className="eyebrow">Tutorial</p>
-          <h2>{block.title}</h2>
+          <h2>{partLabel}</h2>
           <p className="muted small">
-            Step {screenIndex + 1} / {block.onboarding.length}
+            Step {screenIndex + 1} / {group.tutorialCharts.length}
           </p>
-          <h3>{section.title}</h3>
-          <p className="muted onboarding-line">{section.callouts.join(" ")}</p>
+          <h3>{chartDisplayName(chartType)}</h3>
+          <ul className="tutorial-bullets">
+            {tutorialBullets(chartType).map((bullet) => (
+              <li key={`${chartType}-${bullet}`}>{bullet}</li>
+            ))}
+          </ul>
           <div className="onboarding-legend">
-            {chartLegendItems(section.chartType).map((item) => (
-              <div key={`${section.chartType}-${item.label}`} className="onboarding-legend-item">
+            {chartLegendItems(chartType).map((item) => (
+              <div key={`${chartType}-${item.label}`} className="onboarding-legend-item">
                 <span aria-hidden="true" style={legendSwatchStyle(item)} />
                 <span>{item.label}</span>
-              </div>
-            ))}
-          </div>
-          <div className="onboarding-notes">
-            {onboardingNotes(section.chartType).map((note) => (
-              <div key={`${section.chartType}-${note.title}`} className="onboarding-note-card">
-                <div className="onboarding-note-head">
-                  <span className="onboarding-note-dot" aria-hidden="true" />
-                  <strong>{note.title}</strong>
-                </div>
-                <p className="muted small">{note.body}</p>
               </div>
             ))}
           </div>
@@ -847,7 +861,7 @@ function SubjectiveMatrix({
       <div
         className="matrix-grid"
         style={{
-          gridTemplateColumns: `minmax(260px, 1.4fr) repeat(${section.charts.length}, minmax(220px, 1fr))`,
+          gridTemplateColumns: `minmax(220px, 1.1fr) repeat(${section.charts.length}, minmax(150px, 1fr))`,
         }}
       >
         <div className="matrix-head">Question</div>
@@ -889,9 +903,9 @@ function SubjectiveMatrix({
   );
 }
 
-function onboardingPreviewForStep(block: StudyBlock, screenIndex: number) {
-  const chartType = block.onboarding[screenIndex]?.chartType;
-  return (block.onboardingPreviewTrials ?? []).find((trial) => trial.chartType === chartType);
+function onboardingPreviewForStep(group: TutorialGroup, screenIndex: number) {
+  const chartType = group.tutorialCharts[screenIndex];
+  return group.tutorialTrials.find((trial) => trial.chartType === chartType);
 }
 
 function skipOnboarding(
@@ -902,13 +916,13 @@ function skipOnboarding(
   const currentIndex = steps.findIndex(
     (step) =>
       step.type === "onboarding" &&
-      step.block.id === currentStep.block.id &&
+      step.group.id === currentStep.group.id &&
       step.screenIndex === currentStep.screenIndex,
   );
   const nextIndex = steps.findIndex(
     (step, index) =>
       index > currentIndex &&
-      !(step.type === "onboarding" && step.block.id === currentStep.block.id),
+      !(step.type === "onboarding" && step.group.id === currentStep.group.id),
   );
   setSession((prev) => ({
     ...prev,
@@ -1000,62 +1014,32 @@ function chartLegendItems(chartType: ChartType) {
   }
 }
 
-function onboardingNotes(chartType: ChartType) {
+function tutorialBullets(chartType: ChartType) {
   switch (chartType) {
     case "distribution_radar":
       return [
-        {
-          title: "Agreement cues",
-          body: "Look for attributes with visible support in the higher rating bands, especially when that support is concentrated rather than diffuse.",
-        },
-        {
-          title: "Profile reading",
-          body: "The shape gives a fast profile summary, while the bands help you judge how strongly the ratings support that profile.",
-        },
+        "Outline shows the average profile.",
+        "Bands show how ratings are distributed.",
       ];
     case "histogram_small_multiples":
       return [
-        {
-          title: "Per-attribute panels",
-          body: "Each panel isolates one taste dimension so you can compare distribution shape and concentration across attributes.",
-        },
-        {
-          title: "Support and spread",
-          body: "Bars concentrated toward higher rating values indicate stronger support for that attribute.",
-        },
+        "Each panel shows one attribute.",
+        "Concentration indicates agreement.",
       ];
     case "stacked_bar_distribution":
       return [
-        {
-          title: "Whole-distribution bars",
-          body: "Each bar represents the full distribution of ratings for one attribute, with shading indicating how responses are split across levels.",
-        },
-        {
-          title: "Comparing support",
-          body: "Attributes with more bar area in the higher-value segments are more strongly supported by the ratings.",
-        },
+        "Each bar shows the full distribution.",
+        "More area at high values means stronger support.",
       ];
     case "zchart":
       return [
-        {
-          title: "Direction",
-          body: "Direction indicates whether population B is above or below population A for an attribute.",
-        },
-        {
-          title: "Magnitude",
-          body: "Larger displacement indicates larger distributional differences.",
-        },
+        "Direction shows above or below the reference group.",
+        "Larger displacement means larger difference.",
       ];
     case "dual_histogram":
       return [
-        {
-          title: "Mirrored comparison",
-          body: "The left side shows population A and the right side shows population B for the same attribute and rating levels.",
-        },
-        {
-          title: "Difference size",
-          body: "Large shifts in where the two sides concentrate indicate stronger population differences.",
-        },
+        "Each side shows one population.",
+        "Separated shapes indicate stronger differences.",
       ];
     default:
       return [];
@@ -1120,183 +1104,105 @@ function ChartLegend({
 }
 
 function SubjectiveChartPreview({ chartType }: { chartType: ChartType }) {
-  const trial = buildPreviewTrial(chartType);
-  return <ChartRenderer trial={trial} compact="mini" hideCaption hideLegend />;
+  return <ReferenceFigure chartType={chartType} compact="mini" />;
 }
 
-function buildPreviewTrial(chartType: ChartType): Trial {
-  const senses = {
-    Sweetness: "Sweet",
-    Sourness: "Sour",
-    Saltiness: "Salty",
-    Bitterness: "Bitter",
-    Savoriness: "Savory",
-    Fatness: "Fatty",
-    Astringency: "Astringent",
-    Aromaticity: "Aromatic",
-    Texture: "Texture",
-    Piquancy: "Piquant",
-  };
+function ReferenceFigure({
+  chartType,
+  compact = "mini",
+}: {
+  chartType: ChartType;
+  compact?: "mini" | "onboarding" | "survey";
+}) {
+  const width = compact === "onboarding" ? 240 : compact === "survey" ? 160 : 140;
+  const height = compact === "onboarding" ? 150 : compact === "survey" ? 110 : 96;
 
-  const distribution = Object.fromEntries(
-    Object.keys(senses).map((key, index) => [
-      key,
-      {
-        "0": { count: index % 2, percent: 6 + (index % 3) },
-        "1": { count: 1 + (index % 3), percent: 10 + (index % 4) },
-        "2": { count: 2 + ((index + 1) % 3), percent: 13 + (index % 3) },
-        "3": { count: 3 + (index % 2), percent: 18 + ((index + 1) % 3) },
-        "4": { count: 4 + (index % 3), percent: 24 + (index % 4) },
-        "5": { count: 2 + (index % 2), percent: 14 + (index % 3) },
-      },
-    ]),
+  if (chartType === "distribution_radar") {
+    return (
+      <svg width={width} height={height} viewBox="0 0 180 120" aria-label={chartDisplayName(chartType)}>
+        <circle cx="90" cy="60" r="18" fill="none" stroke="#e2e8f0" />
+        <circle cx="90" cy="60" r="34" fill="none" stroke="#e2e8f0" />
+        <circle cx="90" cy="60" r="50" fill="none" stroke="#e2e8f0" />
+        <polygon points="90,15 128,34 140,70 108,100 72,102 40,72 48,34" fill="rgba(245,158,11,0.24)" />
+        <polyline points="90,22 120,38 130,68 106,88 74,90 50,66 58,38 90,22" fill="none" stroke="#dc2626" strokeWidth="3" />
+      </svg>
+    );
+  }
+
+  if (chartType === "histogram_small_multiples") {
+    return (
+      <svg width={width} height={height} viewBox="0 0 180 120" aria-label={chartDisplayName(chartType)}>
+        {[0, 1, 2, 3].map((panel) => {
+          const x = 16 + (panel % 2) * 76;
+          const y = 12 + Math.floor(panel / 2) * 48;
+          return (
+            <g key={panel}>
+              <rect x={x} y={y} width="68" height="40" rx="8" fill="#fff" stroke="#e2e8f0" />
+              {[0, 1, 2, 3, 4].map((bar) => (
+                <rect
+                  key={bar}
+                  x={x + 8 + bar * 11}
+                  y={y + 28 - ((bar + panel) % 4) * 5}
+                  width="7"
+                  height={10 + ((bar + panel) % 4) * 5}
+                  rx="2"
+                  fill="#0f766e"
+                />
+              ))}
+            </g>
+          );
+        })}
+      </svg>
+    );
+  }
+
+  if (chartType === "stacked_bar_distribution") {
+    return (
+      <svg width={width} height={height} viewBox="0 0 180 120" aria-label={chartDisplayName(chartType)}>
+        {[0, 1, 2, 3].map((row) => {
+          const y = 18 + row * 22;
+          return (
+            <g key={row}>
+              <rect x="26" y={y} width="24" height="10" fill="#fef3c7" rx="3" />
+              <rect x="50" y={y} width="28" height="10" fill="#fde68a" rx="3" />
+              <rect x="78" y={y} width="30" height="10" fill="#f59e0b" rx="3" />
+              <rect x="108" y={y} width="22" height="10" fill="#d97706" rx="3" />
+              <rect x="130" y={y} width="20" height="10" fill="#92400e" rx="3" />
+            </g>
+          );
+        })}
+      </svg>
+    );
+  }
+
+  if (chartType === "zchart") {
+    return (
+      <svg width={width} height={height} viewBox="0 0 180 120" aria-label={chartDisplayName(chartType)}>
+        <circle cx="90" cy="60" r="20" fill="none" stroke="#e2e8f0" />
+        <circle cx="90" cy="60" r="38" fill="none" stroke="#e2e8f0" />
+        <circle cx="90" cy="60" r="54" fill="none" stroke="#e2e8f0" />
+        <path d="M90 18 L124 36 L132 72 L102 92 L68 94 L48 70 L58 34 Z" fill="rgba(148,163,184,0.12)" stroke="#475569" strokeWidth="2" />
+        <circle cx="124" cy="36" r="4" fill="#d9534f" />
+        <circle cx="132" cy="72" r="4" fill="#d9534f" />
+        <circle cx="58" cy="34" r="4" fill="#0275d8" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg width={width} height={height} viewBox="0 0 180 120" aria-label={chartDisplayName(chartType)}>
+      <line x1="90" y1="14" x2="90" y2="106" stroke="#cbd5e1" strokeDasharray="4 4" />
+      {[0, 1, 2, 3].map((row) => {
+        const y = 18 + row * 22;
+        return (
+          <g key={row}>
+            <rect x={52 - row * 4} y={y} width={32 + row * 4} height="10" rx="3" fill="#94a3b8" />
+            <rect x="90" y={y} width={24 + row * 6} height="10" rx="3" fill="#ea580c" />
+          </g>
+        );
+      })}
+    </svg>
   );
-
-  const singleStimulus: SingleFoodStimulus = {
-    stimulusId: `preview-${chartType}`,
-    stimulusKind: "single_food",
-    foodName: "Example food",
-    foodNames: ["Example food"],
-    count: 36,
-    senses,
-    valueRange: { min: 0, max: 5 },
-    meanValues: {
-      Sweetness: 3.2,
-      Sourness: 1.7,
-      Saltiness: 2.8,
-      Bitterness: 1.9,
-      Savoriness: 2.4,
-      Fatness: 3.1,
-      Astringency: 1.4,
-      Aromaticity: 3.6,
-      Texture: 3.0,
-      Piquancy: 2.3,
-    },
-    stdevs: {
-      Sweetness: 0.8,
-      Sourness: 0.7,
-      Saltiness: 0.6,
-      Bitterness: 0.7,
-      Savoriness: 0.8,
-      Fatness: 0.9,
-      Astringency: 0.5,
-      Aromaticity: 0.7,
-      Texture: 0.8,
-      Piquancy: 0.9,
-    },
-    distribution,
-  };
-
-  const multiStimulus: MultiFoodStimulus = {
-    stimulusId: `preview-multi-${chartType}`,
-    stimulusKind: "multi_food",
-    foodName: "Preview foods",
-    foodNames: ["Food 1", "Food 2", "Food 3"],
-    senses,
-    valueRange: { min: 0, max: 5 },
-    targetProfileKeys: ["Sweetness", "Aromaticity", "Texture"],
-    targetProfileLabels: ["Sweet", "Aromatic", "Texture"],
-    foods: [1, 2, 3].map((index) => ({
-      index,
-      foodName: `Food ${index}`,
-      count: 28 + index,
-      meanValues: singleStimulus.meanValues,
-      stdevs: singleStimulus.stdevs,
-      distribution,
-    })),
-  };
-
-  const comparisonStimulus: PopulationComparisonStimulus = {
-    stimulusId: `preview-comparison-${chartType}`,
-    stimulusKind: "population_comparison",
-    foodName: "Example food",
-    foodNames: ["Example food"],
-    comparisonLabel: "Population A vs Population B",
-    populationA: {
-      id: "a",
-      label: "Population A",
-      count: 18,
-      meanValues: {
-        Sweetness: 2.4,
-        Sourness: 1.9,
-        Saltiness: 2.6,
-        Bitterness: 1.5,
-        Savoriness: 2.2,
-        Fatness: 2.0,
-        Astringency: 1.2,
-        Aromaticity: 2.4,
-        Texture: 2.5,
-        Piquancy: 1.4,
-      },
-      stdevs: {
-        Sweetness: 0.7,
-        Sourness: 0.5,
-        Saltiness: 0.8,
-        Bitterness: 0.5,
-        Savoriness: 0.6,
-        Fatness: 0.6,
-        Astringency: 0.4,
-        Aromaticity: 0.8,
-        Texture: 0.7,
-        Piquancy: 0.5,
-      },
-      distribution,
-    },
-    populationB: {
-      id: "b",
-      label: "Population B",
-      count: 17,
-      meanValues: {
-        Sweetness: 3.0,
-        Sourness: 1.5,
-        Saltiness: 2.1,
-        Bitterness: 2.1,
-        Savoriness: 2.8,
-        Fatness: 2.6,
-        Astringency: 1.6,
-        Aromaticity: 3.1,
-        Texture: 1.9,
-        Piquancy: 2.0,
-      },
-      stdevs: {
-        Sweetness: 0.8,
-        Sourness: 0.5,
-        Saltiness: 0.7,
-        Bitterness: 0.6,
-        Savoriness: 0.7,
-        Fatness: 0.7,
-        Astringency: 0.5,
-        Aromaticity: 0.8,
-        Texture: 0.6,
-        Piquancy: 0.6,
-      },
-      distribution,
-    },
-    senses,
-    valueRange: { min: 0, max: 5 },
-  };
-
-  const stimulus: TrialStimulus =
-    chartType === "distribution_radar"
-      ? singleStimulus
-      : chartType === "histogram_small_multiples" ||
-          chartType === "stacked_bar_distribution"
-        ? multiStimulus
-        : comparisonStimulus;
-
-  return {
-    id: `subjective-${chartType}`,
-    blockId: "preview",
-    partId: "preview",
-    kind: "preview",
-    chartType,
-    taskType: "tutorial_preview",
-    answerMode: "none",
-    prompt: "",
-    options: [],
-    correctAnswer: "",
-    stimulus,
-  };
 }
 
 function ChartRenderer({
@@ -1355,7 +1261,7 @@ function renderSingleFoodVisualization(
         meanValues={stimulus.meanValues}
         distribution={stimulus.distribution}
         showOutliers={false}
-        size={compact === "onboarding" ? 360 : compact === "mini" ? 170 : 235}
+        size={compact === "onboarding" ? 310 : compact === "mini" ? 150 : 220}
         valueRange={stimulus.valueRange}
       />
     );
@@ -1366,8 +1272,8 @@ function renderSingleFoodVisualization(
       <HistogramSmallMultiples
         senses={stimulus.senses}
         distribution={stimulus.distribution}
-        width={compact === "onboarding" ? 620 : compact === "mini" ? 220 : 520}
-        height={compact === "onboarding" ? 360 : compact === "mini" ? 180 : 320}
+        width={compact === "onboarding" ? 420 : compact === "mini" ? 170 : 470}
+        height={compact === "onboarding" ? 340 : compact === "mini" ? 120 : 300}
         valueRange={stimulus.valueRange}
       />
     );
@@ -1377,8 +1283,8 @@ function renderSingleFoodVisualization(
     <StackedBarDistributionChart
       senses={stimulus.senses}
       distribution={stimulus.distribution}
-      width={compact === "onboarding" ? 620 : compact === "mini" ? 220 : 520}
-      height={compact === "onboarding" ? 360 : compact === "mini" ? 180 : 320}
+      width={compact === "onboarding" ? 420 : compact === "mini" ? 170 : 470}
+      height={compact === "onboarding" ? 340 : compact === "mini" ? 120 : 300}
       valueRange={stimulus.valueRange}
     />
   );
@@ -1399,7 +1305,7 @@ function renderMultiFoodVisualization(
               meanValues={food.meanValues}
               distribution={food.distribution}
               showOutliers={false}
-              size={compact === "mini" ? 115 : compact === "onboarding" ? 170 : 135}
+              size={compact === "mini" ? 100 : compact === "onboarding" ? 138 : 112}
               valueRange={stimulus.valueRange}
               showLabels={compact !== "mini"}
             />
@@ -1407,16 +1313,16 @@ function renderMultiFoodVisualization(
             <HistogramSmallMultiples
               senses={stimulus.senses}
               distribution={food.distribution}
-              width={compact === "mini" ? 170 : compact === "onboarding" ? 220 : 190}
-              height={compact === "mini" ? 150 : compact === "onboarding" ? 210 : 170}
+              width={compact === "mini" ? 156 : compact === "onboarding" ? 184 : 164}
+              height={compact === "mini" ? 92 : compact === "onboarding" ? 108 : 96}
               valueRange={stimulus.valueRange}
             />
           ) : (
             <StackedBarDistributionChart
               senses={stimulus.senses}
               distribution={food.distribution}
-              width={compact === "mini" ? 170 : compact === "onboarding" ? 220 : 190}
-              height={compact === "mini" ? 150 : compact === "onboarding" ? 210 : 170}
+              width={compact === "mini" ? 156 : compact === "onboarding" ? 184 : 164}
+              height={compact === "mini" ? 92 : compact === "onboarding" ? 108 : 96}
               valueRange={stimulus.valueRange}
             />
           )}
@@ -1444,7 +1350,7 @@ function renderPopulationComparison(
           baselineMean={stimulus.populationA.meanValues}
           baselineStDev={stimulus.populationA.stdevs}
           compareMean={stimulus.populationB.meanValues}
-          size={compact === "onboarding" ? 340 : compact === "mini" ? 160 : 220}
+          size={compact === "onboarding" ? 300 : compact === "mini" ? 140 : 210}
         />
       </div>
     );
@@ -1467,8 +1373,8 @@ function renderPopulationComparison(
           label: stimulus.populationB.label,
           distribution: stimulus.populationB.distribution,
         }}
-        width={compact === "onboarding" ? 620 : compact === "mini" ? 220 : 520}
-        height={compact === "onboarding" ? 360 : compact === "mini" ? 180 : 320}
+        width={compact === "onboarding" ? 500 : compact === "mini" ? 170 : 470}
+        height={compact === "onboarding" ? 340 : compact === "mini" ? 120 : 300}
         valueRange={stimulus.valueRange}
       />
     </div>
@@ -1521,4 +1427,89 @@ function calculateErrorCount(userAnswer: string | string[], correctAnswer: strin
     return errors;
   }
   return userAnswer === correctAnswer ? 0 : 1;
+}
+
+function chartTypeFromOptionLabel(option: string): ChartType {
+  const mapping = ([
+    "distribution_radar",
+    "histogram_small_multiples",
+    "stacked_bar_distribution",
+    "zchart",
+    "dual_histogram",
+  ] as ChartType[]).find((chartType) => chartDisplayName(chartType) === option);
+  return mapping ?? "distribution_radar";
+}
+
+function buildTutorialGroups(pack: StudyPack): TutorialGroup[] {
+  const [block1, block2, block3, block4, block5] = pack.blocks;
+  return [
+    {
+      id: "group1",
+      partLabel: "Part A",
+      title: "Group 1: Distribution and Agreement",
+      intro:
+        "This group covers single-food distribution and agreement reading with the radial profile, histogram small multiples, and stacked bar distribution.",
+      blocks: [block1],
+      tutorialCharts: [
+        "distribution_radar",
+        "histogram_small_multiples",
+        "stacked_bar_distribution",
+      ],
+      tutorialTrials: [
+        pickTutorialTrial([block1], "distribution_radar"),
+        pickTutorialTrial([block1], "histogram_small_multiples"),
+        pickTutorialTrial([block1], "stacked_bar_distribution"),
+      ],
+      practiceTrial: block1.practiceTrials[0],
+    },
+    {
+      id: "group2",
+      partLabel: "Part A",
+      title: "Group 2: Profile Matching Across Foods",
+      intro:
+        "This group covers profile similarity and spatial profile comparison across several foods using all three small-multiple chart types.",
+      blocks: [block2, block3],
+      tutorialCharts: [
+        "distribution_radar",
+        "histogram_small_multiples",
+        "stacked_bar_distribution",
+      ],
+      tutorialTrials: [
+        pickTutorialTrial([block2, block3], "distribution_radar"),
+        pickTutorialTrial([block2, block3], "histogram_small_multiples"),
+        pickTutorialTrial([block2, block3], "stacked_bar_distribution"),
+      ],
+      practiceTrial: block2.practiceTrials[0],
+      subjectiveBlock: block3,
+    },
+    {
+      id: "group3",
+      partLabel: "Part B",
+      title: "Group 3: Population Comparison",
+      intro:
+        "This group covers subgroup distribution comparison and difference magnitude with the z-score radar and the dual distribution comparison view.",
+      blocks: [block4, block5],
+      tutorialCharts: ["zchart", "dual_histogram"],
+      tutorialTrials: [
+        pickTutorialTrial([block4, block5], "zchart"),
+        pickTutorialTrial([block4, block5], "dual_histogram"),
+      ],
+      practiceTrial: block4.practiceTrials[0],
+      subjectiveBlock: block5,
+    },
+  ];
+}
+
+function pickTutorialTrial(blocks: StudyBlock[], chartType: ChartType): Trial {
+  for (const block of blocks) {
+    const preview = (block.onboardingPreviewTrials ?? []).find(
+      (trial) => trial.chartType === chartType,
+    );
+    if (preview) return preview;
+    const practice = block.practiceTrials.find((trial) => trial.chartType === chartType);
+    if (practice) return practice;
+    const real = block.realTrials.find((trial) => trial.chartType === chartType);
+    if (real) return real;
+  }
+  throw new Error(`Missing tutorial preview for ${chartType}`);
 }

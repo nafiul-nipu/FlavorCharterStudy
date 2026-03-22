@@ -26,6 +26,16 @@ export default function HistogramSmallMultiples({
       levels.map((level) => distribution[key]?.[String(level)]?.percent ?? 0),
     ),
   );
+  const columns = Math.min(5, Math.max(2, keys.length >= 5 ? 5 : keys.length));
+  const rows = Math.ceil(keys.length / columns);
+  const gap = 10;
+  const panelWidth = Math.max(96, Math.floor((width - gap * (columns - 1)) / columns));
+  const targetPanelHeight = Math.floor((height - gap * Math.max(rows - 1, 0)) / rows);
+  const panelHeight = Math.max(42, Math.min(78, targetPanelHeight));
+  const innerHeight = Math.max(20, panelHeight - 18);
+  const chartWidth = panelWidth - 12;
+  const barWidth = Math.max(7, Math.floor((chartWidth - 20) / levels.length));
+  const shortLabels = width <= 180;
 
   return (
     <div
@@ -33,58 +43,57 @@ export default function HistogramSmallMultiples({
         width,
         maxWidth: "100%",
         display: "grid",
-        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-        gap: 10,
+        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+        gap,
       }}
     >
       {keys.map((key) => {
-        const panelHeight = Math.max(110, Math.floor(height / 5));
-        const innerHeight = panelHeight - 34;
-        const barWidth = Math.max(10, Math.floor((width / 2 - 34) / levels.length) - 4);
-
         return (
           <div
             key={key}
             style={{
-              padding: "8px 8px 10px",
-              borderRadius: 14,
+              width: panelWidth,
+              padding: "6px 6px 8px",
+              borderRadius: 12,
               border: "1px solid #e2e8f0",
               background: "#fff",
+              justifySelf: "center",
             }}
           >
             <div
               style={{
-                marginBottom: 6,
-                fontSize: 11,
+                marginBottom: 2,
+                fontSize: 8,
                 fontWeight: 700,
                 color: "#334155",
                 textAlign: "center",
+                lineHeight: 1.15,
               }}
             >
-              {senses[key]}
+              {shortLabels ? senses[key].slice(0, 3) : senses[key]}
             </div>
-            <svg width="100%" height={panelHeight} viewBox={`0 0 ${barWidth * levels.length + 36} ${panelHeight}`}>
+            <svg width="100%" height={panelHeight} viewBox={`0 0 ${chartWidth} ${panelHeight}`}>
               {levels.map((level, index) => {
                 const percent = distribution[key]?.[String(level)]?.percent ?? 0;
                 const barHeight = (percent / maxPercent) * innerHeight;
-                const x = 24 + index * barWidth;
-                const y = innerHeight - barHeight + 8;
+                const x = 10 + index * barWidth;
+                const y = innerHeight - barHeight + 4;
                 return (
                   <g key={`${key}-${level}`}>
                     <rect
-                      x={x + 2}
+                      x={x + 1}
                       y={y}
-                      width={barWidth - 4}
+                      width={Math.max(6, barWidth - 2)}
                       height={barHeight}
-                      rx={4}
+                      rx={2}
                       fill="#0f766e"
                       fillOpacity={0.82}
                     />
                     <text
                       x={x + barWidth / 2}
-                      y={panelHeight - 6}
+                      y={panelHeight - 2}
                       textAnchor="middle"
-                      fontSize="9"
+                      fontSize="6.5"
                       fill="#475569"
                     >
                       {level}

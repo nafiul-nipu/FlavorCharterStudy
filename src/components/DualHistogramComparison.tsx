@@ -37,6 +37,15 @@ export default function DualHistogramComparison({
       ]),
     ),
   );
+  const columns = Math.min(5, Math.max(2, keys.length >= 5 ? 5 : keys.length));
+  const rows = Math.ceil(keys.length / columns);
+  const gap = 10;
+  const panelWidth = Math.max(100, Math.floor((width - gap * (columns - 1)) / columns));
+  const targetPanelHeight = Math.floor((height - gap * Math.max(rows - 1, 0)) / rows);
+  const panelHeight = Math.max(44, Math.min(82, targetPanelHeight));
+  const innerHeight = Math.max(22, panelHeight - 18);
+  const centerX = panelWidth / 2;
+  const shortLabels = width <= 180;
 
   return (
     <div
@@ -44,37 +53,34 @@ export default function DualHistogramComparison({
         width,
         maxWidth: "100%",
         display: "grid",
-        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-        gap: 10,
+        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+        gap,
       }}
     >
       {keys.map((key) => {
-        const panelWidth = Math.max(180, Math.floor(width / 2) - 16);
-        const panelHeight = Math.max(110, Math.floor(height / 5));
-        const innerHeight = panelHeight - 34;
-        const centerX = panelWidth / 2;
-        const stepWidth = Math.max(14, Math.floor((panelWidth / 2 - 24) / levels.length));
-
         return (
           <div
             key={key}
             style={{
-              padding: "8px 8px 10px",
-              borderRadius: 14,
+              width: panelWidth,
+              padding: "6px 6px 8px",
+              borderRadius: 12,
               border: "1px solid #e2e8f0",
               background: "#fff",
+              justifySelf: "center",
             }}
           >
             <div
               style={{
-                marginBottom: 6,
-                fontSize: 11,
+                marginBottom: 2,
+                fontSize: 8,
                 fontWeight: 700,
                 color: "#334155",
                 textAlign: "center",
+                lineHeight: 1.15,
               }}
             >
-              {senses[key]}
+              {shortLabels ? senses[key].slice(0, 3) : senses[key]}
             </div>
             <svg width="100%" height={panelHeight} viewBox={`0 0 ${panelWidth} ${panelHeight}`}>
               <line
@@ -92,8 +98,8 @@ export default function DualHistogramComparison({
                   populationB.distribution[key]?.[String(level)]?.percent ?? 0;
                 const leftWidth = (leftPercent / maxPercent) * (panelWidth / 2 - 20);
                 const rightWidth = (rightPercent / maxPercent) * (panelWidth / 2 - 20);
-                const y = 8 + index * ((innerHeight - 6) / levels.length);
-                const barHeight = Math.max(8, (innerHeight - 12) / levels.length - 3);
+                const y = 4 + index * ((innerHeight - 4) / levels.length);
+                const barHeight = Math.max(4, (innerHeight - 6) / levels.length - 2);
 
                 return (
                   <g key={`${key}-${level}`}>
@@ -115,9 +121,9 @@ export default function DualHistogramComparison({
                     />
                     <text
                       x={centerX}
-                      y={y + barHeight - 1}
+                      y={y + barHeight - 0.5}
                       textAnchor="middle"
-                      fontSize="8"
+                      fontSize="6.5"
                       fill="#475569"
                     >
                       {level}

@@ -1023,7 +1023,7 @@ def build_pack() -> dict[str, Any]:
             prompt="Preview",
             options=[],
             correct_answer="",
-            stimulus=multi_food_stimulus(block2_preview_candidate),
+            stimulus=single_food_stimulus(block1_preview_candidate.summary, "part-a-preview-hist"),
         ),
         make_trial(
             trial_id="part-a-preview-stacked",
@@ -1036,7 +1036,7 @@ def build_pack() -> dict[str, Any]:
             prompt="Preview",
             options=[],
             correct_answer="",
-            stimulus=multi_food_stimulus(block3_preview_candidate),
+            stimulus=single_food_stimulus(block1_preview_candidate.summary, "part-a-preview-stacked"),
         ),
     ]
 
