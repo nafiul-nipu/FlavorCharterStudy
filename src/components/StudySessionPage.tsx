@@ -531,7 +531,13 @@ export default function StudySessionPage() {
         ) : null}
 
         {currentStep.type === "trial" ? (
-          <article className="card fixed-screen-card trial-layout">
+          <article
+            className={`card fixed-screen-card trial-layout ${
+              currentStep.trial.answerMode === "multi_select_indices"
+                ? "multi-select-trial-layout"
+                : "single-answer-trial-layout"
+            }`}
+          >
             <div className="trial-meta">
               <div>
                 <p className="eyebrow">
@@ -547,41 +553,74 @@ export default function StudySessionPage() {
               </div>
             </div>
 
-            <div className="answer-panel">
-              <h3>{answerPanelTitle(currentStep.trial.answerMode)}</h3>
-              <AnswerEditor
-                trial={currentStep.trial}
-                activeSingleAnswer={activeSingleAnswer}
-                activeMultiAnswer={activeMultiAnswer}
-                onSingleAnswer={setActiveSingleAnswer}
-                onToggleMulti={toggleMultiAnswer}
-              />
+            <div className="trial-content-frame">
+              <div className="chart-panel">
+                {currentStep.trial.answerMode === "multi_select_indices" ? (
+                  <MultiSelectCardGrid
+                    trial={currentStep.trial}
+                    activeMultiAnswer={activeMultiAnswer}
+                    onToggleMulti={toggleMultiAnswer}
+                  />
+                ) : (
+                  <ChartRenderer
+                    trial={currentStep.trial}
+                    compact={false}
+                    hideLegend={currentStep.trial.kind === "real"}
+                  />
+                )}
+              </div>
 
-              {currentStep.trial.answerMode === "multi_select_indices" ? (
-                <p className="muted small">
-                  Selected indices:{" "}
-                  {activeMultiAnswer.length ? activeMultiAnswer.join(", ") : "None yet"}
-                </p>
-              ) : null}
-
-              <button
-                className="primary-button"
-                onClick={() => submitTrial(currentStep.trial)}
-                disabled={!canSubmit}
-              >
-                Submit answer
-              </button>
-
-              {feedback ? (
-                <p className={feedback === "Correct" ? "success-text" : "error-text"}>
-                  {feedback}
-                </p>
-              ) : null}
+              {currentStep.trial.answerMode === "multi_select_indices" ? null : (
+                <div className="answer-panel">
+                  <h3>{answerPanelTitle(currentStep.trial.answerMode)}</h3>
+                  <AnswerEditor
+                    trial={currentStep.trial}
+                    activeSingleAnswer={activeSingleAnswer}
+                    activeMultiAnswer={activeMultiAnswer}
+                    onSingleAnswer={setActiveSingleAnswer}
+                    onToggleMulti={toggleMultiAnswer}
+                  />
+                  <div className="answer-panel-actions">
+                    <button
+                      className="primary-button"
+                      onClick={() => submitTrial(currentStep.trial)}
+                      disabled={!canSubmit}
+                    >
+                      Submit answer
+                    </button>
+                    {feedback ? (
+                      <p className={feedback === "Correct" ? "success-text" : "error-text"}>
+                        {feedback}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="chart-panel">
-              <ChartRenderer trial={currentStep.trial} />
-            </div>
+            {currentStep.trial.answerMode === "multi_select_indices" ? (
+              <div className="trial-action-bar">
+                <div className="action-summary muted small">
+                  {`Selected indices: ${
+                    activeMultiAnswer.length ? activeMultiAnswer.join(", ") : "None yet"
+                  }`}
+                </div>
+                <div className="action-controls">
+                  <button
+                    className="primary-button"
+                    onClick={() => submitTrial(currentStep.trial)}
+                    disabled={!canSubmit}
+                  >
+                    Submit answer
+                  </button>
+                  {feedback ? (
+                    <p className={feedback === "Correct" ? "success-text" : "error-text"}>
+                      {feedback}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
           </article>
         ) : null}
 
@@ -729,23 +768,6 @@ function AnswerEditor({
   onSingleAnswer: (value: string) => void;
   onToggleMulti: (value: string) => void;
 }) {
-  if (trial.answerMode === "multi_select_indices") {
-    return (
-      <div className="question-grid">
-        {trial.options.map((option) => (
-          <label key={option} className="option-row">
-            <input
-              type="checkbox"
-              checked={activeMultiAnswer.includes(option)}
-              onChange={() => onToggleMulti(option)}
-            />
-            <span>{option}</span>
-          </label>
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div className="question-grid">
       {trial.options.map((option) => (
@@ -759,6 +781,79 @@ function AnswerEditor({
           <span>{option}</span>
         </label>
       ))}
+    </div>
+  );
+}
+
+function MultiSelectCardGrid({
+  trial,
+  activeMultiAnswer,
+  onToggleMulti,
+}: {
+  trial: Trial;
+  activeMultiAnswer: string[];
+  onToggleMulti: (value: string) => void;
+}) {
+  if (trial.stimulus.stimulusKind !== "multi_food") {
+    return null;
+  }
+
+  return (
+    <div className="multi-select-frame">
+      <ChartLegend chartType={trial.chartType} />
+      <div className="food-panel-grid selectable-food-grid">
+        {trial.stimulus.foods.map((food) => {
+          const option = String(food.index);
+          const isSelected = activeMultiAnswer.includes(option);
+          return (
+            <label
+              key={`${trial.id}-${food.index}`}
+              className={`food-panel-card selectable-food-card ${
+                isSelected ? "selected" : ""
+              }`}
+            >
+              <div className="food-panel-head selectable-food-head">
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => onToggleMulti(option)}
+                />
+                <span className="food-panel-index">{food.index}</span>
+                <span className="food-panel-name">{food.foodName}</span>
+              </div>
+              <div className="food-panel-chart">
+                {trial.chartType === "distribution_radar" ? (
+                  <OutlierRadarChart
+                    senses={trial.stimulus.senses}
+                    meanValues={food.meanValues}
+                    distribution={food.distribution}
+                    showOutliers={false}
+                    size={126}
+                    valueRange={trial.stimulus.valueRange}
+                    showLabels={false}
+                  />
+                ) : trial.chartType === "histogram_small_multiples" ? (
+                  <HistogramSmallMultiples
+                    senses={trial.stimulus.senses}
+                    distribution={food.distribution}
+                    width={210}
+                    height={132}
+                    valueRange={trial.stimulus.valueRange}
+                  />
+                ) : (
+                  <StackedBarDistributionChart
+                    senses={trial.stimulus.senses}
+                    distribution={food.distribution}
+                    width={210}
+                    height={132}
+                    valueRange={trial.stimulus.valueRange}
+                  />
+                )}
+              </div>
+            </label>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -839,8 +934,15 @@ function OnboardingScreen({
             </button>
           </div>
         </div>
-        <div className="chart-panel onboarding-preview-panel">
-          {previewTrial ? <ChartRenderer trial={previewTrial} compact="onboarding" /> : null}
+        <div className="onboarding-preview-panel">
+          {previewTrial ? (
+            <ChartRenderer
+              trial={previewTrial}
+              compact="onboarding"
+              hideCaption
+              hideLegend
+            />
+          ) : null}
         </div>
       </div>
     </article>
@@ -1261,7 +1363,7 @@ function renderSingleFoodVisualization(
         meanValues={stimulus.meanValues}
         distribution={stimulus.distribution}
         showOutliers={false}
-        size={compact === "onboarding" ? 310 : compact === "mini" ? 150 : 220}
+        size={compact === "onboarding" ? 260 : compact === "mini" ? 150 : 250}
         valueRange={stimulus.valueRange}
       />
     );
@@ -1272,8 +1374,8 @@ function renderSingleFoodVisualization(
       <HistogramSmallMultiples
         senses={stimulus.senses}
         distribution={stimulus.distribution}
-        width={compact === "onboarding" ? 420 : compact === "mini" ? 170 : 470}
-        height={compact === "onboarding" ? 340 : compact === "mini" ? 120 : 300}
+        width={compact === "onboarding" ? 380 : compact === "mini" ? 170 : 760}
+        height={compact === "onboarding" ? 280 : compact === "mini" ? 120 : 320}
         valueRange={stimulus.valueRange}
       />
     );
@@ -1283,8 +1385,8 @@ function renderSingleFoodVisualization(
     <StackedBarDistributionChart
       senses={stimulus.senses}
       distribution={stimulus.distribution}
-      width={compact === "onboarding" ? 420 : compact === "mini" ? 170 : 470}
-      height={compact === "onboarding" ? 340 : compact === "mini" ? 120 : 300}
+      width={compact === "onboarding" ? 380 : compact === "mini" ? 170 : 760}
+      height={compact === "onboarding" ? 280 : compact === "mini" ? 120 : 320}
       valueRange={stimulus.valueRange}
     />
   );
@@ -1305,7 +1407,7 @@ function renderMultiFoodVisualization(
               meanValues={food.meanValues}
               distribution={food.distribution}
               showOutliers={false}
-              size={compact === "mini" ? 100 : compact === "onboarding" ? 138 : 112}
+              size={compact === "mini" ? 100 : compact === "onboarding" ? 138 : 126}
               valueRange={stimulus.valueRange}
               showLabels={compact !== "mini"}
             />
@@ -1313,16 +1415,16 @@ function renderMultiFoodVisualization(
             <HistogramSmallMultiples
               senses={stimulus.senses}
               distribution={food.distribution}
-              width={compact === "mini" ? 156 : compact === "onboarding" ? 184 : 164}
-              height={compact === "mini" ? 92 : compact === "onboarding" ? 108 : 96}
+              width={compact === "mini" ? 156 : compact === "onboarding" ? 184 : 210}
+              height={compact === "mini" ? 92 : compact === "onboarding" ? 108 : 132}
               valueRange={stimulus.valueRange}
             />
           ) : (
             <StackedBarDistributionChart
               senses={stimulus.senses}
               distribution={food.distribution}
-              width={compact === "mini" ? 156 : compact === "onboarding" ? 184 : 164}
-              height={compact === "mini" ? 92 : compact === "onboarding" ? 108 : 96}
+              width={compact === "mini" ? 156 : compact === "onboarding" ? 184 : 210}
+              height={compact === "mini" ? 92 : compact === "onboarding" ? 108 : 132}
               valueRange={stimulus.valueRange}
             />
           )}
@@ -1350,7 +1452,7 @@ function renderPopulationComparison(
           baselineMean={stimulus.populationA.meanValues}
           baselineStDev={stimulus.populationA.stdevs}
           compareMean={stimulus.populationB.meanValues}
-          size={compact === "onboarding" ? 300 : compact === "mini" ? 140 : 210}
+          size={compact === "onboarding" ? 250 : compact === "mini" ? 140 : 235}
         />
       </div>
     );
@@ -1373,8 +1475,8 @@ function renderPopulationComparison(
           label: stimulus.populationB.label,
           distribution: stimulus.populationB.distribution,
         }}
-        width={compact === "onboarding" ? 500 : compact === "mini" ? 170 : 470}
-        height={compact === "onboarding" ? 340 : compact === "mini" ? 120 : 300}
+        width={compact === "onboarding" ? 420 : compact === "mini" ? 170 : 760}
+        height={compact === "onboarding" ? 280 : compact === "mini" ? 120 : 320}
         valueRange={stimulus.valueRange}
       />
     </div>
