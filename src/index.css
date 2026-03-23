@@ -737,6 +737,8 @@ code {
   display: grid;
   gap: 10px;
   align-content: start;
+  padding-left: 10px;
+  border-left: 2px solid #cbd5e1;
 }
 
 .matrix-preview-card {
@@ -842,16 +844,43 @@ code {
 .matrix-cell {
   display: flex;
   justify-content: center;
+  padding-left: 10px;
+  border-left: 2px solid #dbe4ee;
 }
 
-.likert-select {
+.likert-radio-group {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
   width: 100%;
-  min-width: 78px;
   border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  padding: 7px 9px;
-  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.likert-radio-option {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 4px 2px;
+  border-right: 1px solid #cbd5e1;
+  background: transparent;
   color: #1e293b;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.likert-radio-option:last-child {
+  border-right: 0;
+}
+
+.likert-radio-option input {
+  margin: 0;
+}
+
+.likert-radio-option:has(input:checked) {
+  background: #fff7ed;
 }
 
 .summary-strip {

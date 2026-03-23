@@ -62,13 +62,22 @@ export function loadSession(): SavedSession | null {
   const raw = window.localStorage.getItem(SESSION_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as SavedSession;
+    const session = JSON.parse(raw) as SavedSession;
+    if (session.submittedAt) {
+      window.localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return session;
   } catch {
     return null;
   }
 }
 
 export function saveSession(session: SavedSession) {
+  if (session.submittedAt) {
+    window.localStorage.removeItem(SESSION_KEY);
+    return;
+  }
   window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 

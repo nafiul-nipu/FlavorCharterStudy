@@ -509,9 +509,16 @@ function toggleMultiAnswer(option: string) {
             <p className="eyebrow">Practice</p>
             <h2>{currentStep.group.title}</h2>
             <p className="muted">
-              You will now begin the practice example for this group.
+              You will now complete one practice example for this group.
             </p>
-            <p className="muted">Practice responses give immediate correctness feedback.</p>
+            <p className="muted">
+              This practice is here to help you learn the response pattern for this group, not
+              to teach the chart answers.
+            </p>
+            <p className="muted">
+              Practice responses give immediate correctness feedback. After this one practice
+              trial, you will continue to the main study questions.
+            </p>
             <button className="primary-button" onClick={goToNextStep}>
               Start Practice
             </button>
@@ -597,9 +604,7 @@ function toggleMultiAnswer(option: string) {
                   <AnswerEditor
                     trial={currentStep.trial}
                     activeSingleAnswer={activeSingleAnswer}
-                    activeMultiAnswer={activeMultiAnswer}
                     onSingleAnswer={setActiveSingleAnswer}
-                    onToggleMulti={toggleMultiAnswer}
                   />
                   <div className="answer-panel-actions">
                     <button
@@ -758,15 +763,11 @@ function toggleMultiAnswer(option: string) {
 function AnswerEditor({
   trial,
   activeSingleAnswer,
-  activeMultiAnswer,
   onSingleAnswer,
-  onToggleMulti,
 }: {
   trial: Trial;
   activeSingleAnswer: string;
-  activeMultiAnswer: string[];
   onSingleAnswer: (value: string) => void;
-  onToggleMulti: (value: string) => void;
 }) {
   return (
     <div className="question-grid">
@@ -1011,18 +1012,23 @@ function SubjectiveMatrix({
               </div>
               {section.charts.map((chart) => (
                 <div key={`${question.id}-${chart.chartType}`} className="matrix-cell">
-                  <select
-                    className="likert-select"
-                    value={values[chart.chartType]?.[question.id] ?? ""}
-                    onChange={(event) => onChange(chart.chartType, question.id, event.target.value)}
+                  <div
+                    className="likert-radio-group"
+                    role="radiogroup"
+                    aria-label={`${question.label} for ${chart.title}`}
                   >
-                    <option value="">Rate</option>
                     {section.scaleOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
+                      <label key={option} className="likert-radio-option">
+                        <input
+                          type="radio"
+                          name={`${question.id}-${chart.chartType}`}
+                          checked={values[chart.chartType]?.[question.id] === option}
+                          onChange={() => onChange(chart.chartType, question.id, option)}
+                        />
+                        <span>{option}</span>
+                      </label>
                     ))}
-                  </select>
+                  </div>
                 </div>
               ))}
             </Fragment>
