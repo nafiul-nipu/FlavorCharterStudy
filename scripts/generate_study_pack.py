@@ -71,6 +71,19 @@ CHART_FOOTPRINTS = {
     "dual_histogram": {"width": 520, "height": 360, "approximateArea": 187200},
 }
 
+BLOCK1_MIN_SUPPORT_SCORE = 0.45
+BLOCK1_MIN_TOP3_AVG = 0.62
+BLOCK1_MIN_MARGIN = 0.06
+PROFILE_MIN_MEMBER_ADVANTAGE = 0.08
+DOMINANT_PROFILE_MIN_MATCH_STRENGTH = 1.45
+SPATIAL_PROFILE_MIN_MATCH_STRENGTH = 0.75
+BLOCK4_MIN_TUPLE_STRENGTH = 0.7
+BLOCK4_MIN_MARGIN = 0.14
+BLOCK5_SIGNIFICANT_MIN_OVERALL = 0.62
+BLOCK5_SIGNIFICANT_MIN_TOP = 1.05
+BLOCK5_SUBTLE_MAX_OVERALL = 0.25
+BLOCK5_SUBTLE_MAX_TOP = 0.5
+
 
 @dataclass
 class FoodSummary:
@@ -264,6 +277,18 @@ def rank_keys_by_score(summary: FoodSummary) -> list[tuple[str, float]]:
     )
 
 
+def profile_match_strength(summary: FoodSummary, target_keys: tuple[str, ...]) -> float:
+    return sum(support_score(summary, key) for key in target_keys)
+
+
+def top_non_target_strength(summary: FoodSummary, target_keys: tuple[str, ...]) -> float:
+    ranked = rank_keys_by_score(summary)
+    return max(
+        (score for key, score in ranked if key not in target_keys),
+        default=0.0,
+    )
+
+
 def rank_difference_keys(a: FoodSummary, b: FoodSummary) -> list[tuple[str, float]]:
     return sorted(
         ((key, difference_score(a, b, key)) for key in TASTE_KEYS),
@@ -308,7 +333,12 @@ def build_tuple_candidate(summary: FoodSummary) -> TupleCandidate | None:
         return None
     correct = tuple(key for key, _ in ranked[:3])
     margin = ranked[2][1] - ranked[3][1]
-    if ranked[2][1] < 0.4 or margin < 0.03:
+    top3_avg = sum(score for _, score in ranked[:3]) / 3
+    if (
+        ranked[2][1] < BLOCK1_MIN_SUPPORT_SCORE
+        or top3_avg < BLOCK1_MIN_TOP3_AVG
+        or margin < BLOCK1_MIN_MARGIN
+    ):
         return None
 
     distractor_keys = [
@@ -326,6 +356,7 @@ def build_tuple_candidate(summary: FoodSummary) -> TupleCandidate | None:
     notes = [
         f"support={tuple_label(correct)}",
         f"top-three-vs-fourth margin={margin:.2f}",
+        f"top-three-avg={top3_avg:.2f}",
     ]
     return TupleCandidate(
         summary=summary,
@@ -368,15 +399,20 @@ def build_profile_candidates(
     mode: str,
     needed: int,
 ) -> list[MultiFoodCandidate]:
-    signatures: dict[tuple[str, ...], list[FoodSummary]] = defaultdict(list)
-    for summary in summaries:
+    def signature_for_summary(summary: FoodSummary) -> tuple[str, ...] | None:
         ranked = rank_keys_by_score(summary)
         if mode == "dominant":
-            signatures[canonical_tuple(key for key, _ in ranked[:3])].append(summary)
-        else:
-            pair = best_spatial_pair(summary)
-            if pair is not None:
-                signatures[canonical_tuple(pair[0])].append(summary)
+            return canonical_tuple(key for key, _ in ranked[:3])
+        pair = best_spatial_pair(summary)
+        if pair is None:
+            return None
+        return canonical_tuple(pair[0])
+
+    signatures: dict[tuple[str, ...], list[FoodSummary]] = defaultdict(list)
+    for summary in summaries:
+        signature = signature_for_summary(summary)
+        if signature is not None:
+            signatures[signature].append(summary)
 
     candidates: list[MultiFoodCandidate] = []
     for target_keys, matches in signatures.items():
@@ -385,29 +421,36 @@ def build_profile_candidates(
         ordered_matches = sorted(matches, key=lambda item: (-item.count, item.food))
         chosen_matches = ordered_matches[:2]
 
+        match_strengths = [profile_match_strength(summary, target_keys) for summary in chosen_matches]
+        weakest_match_strength = min(match_strengths)
+
         distractor_pool = []
         for summary in summaries:
             if summary.food in {item.food for item in chosen_matches}:
                 continue
-            ranked = rank_keys_by_score(summary)
-            if mode == "dominant":
-                summary_keys = canonical_tuple(key for key, _ in ranked[:3])
-            else:
-                pair = best_spatial_pair(summary)
-                if pair is None:
-                    continue
-                summary_keys = canonical_tuple(pair[0])
+            summary_keys = signature_for_summary(summary)
+            if summary_keys is None:
+                continue
 
             shared = overlaps(summary_keys, target_keys)
             if shared == len(target_keys):
                 continue
-            distractor_pool.append((shared, summary.count, summary))
+            target_strength = profile_match_strength(summary, target_keys)
+            distractor_pool.append((shared, target_strength, summary.count, summary))
 
         if len(distractor_pool) < 3:
             continue
 
-        distractor_pool.sort(key=lambda item: (-item[0], -item[1], item[2].food))
-        selected_distractors = [item[2] for item in distractor_pool[:3]]
+        viable_distractors = [
+            item
+            for item in distractor_pool
+            if item[1] <= weakest_match_strength - PROFILE_MIN_MEMBER_ADVANTAGE
+        ]
+        if len(viable_distractors) < 3:
+            continue
+
+        viable_distractors.sort(key=lambda item: (-item[0], -item[1], -item[2], item[3].food))
+        selected_distractors = [item[3] for item in viable_distractors[:3]]
         displayed = chosen_matches + selected_distractors
         random.Random(f"{mode}:{target_keys}").shuffle(displayed)
         correct_indices = sorted(
@@ -417,14 +460,29 @@ def build_profile_candidates(
         )
 
         max_distractor_overlap = max(
-            overlaps(
-                tuple(key for key, _ in rank_keys_by_score(summary)[:3]),
-                target_keys,
-            )
+            overlaps(signature_for_summary(summary) or (), target_keys)
             for summary in selected_distractors
         )
-        clarity_margin = max(0.0, len(target_keys) - max_distractor_overlap)
-        if clarity_margin < 1:
+        distractor_strengths = [
+            profile_match_strength(summary, target_keys) for summary in selected_distractors
+        ]
+        weakest_match_strength = min(match_strengths)
+        strongest_distractor_strength = max(distractor_strengths)
+        member_advantage = weakest_match_strength - strongest_distractor_strength
+        clarity_margin = min(
+            max(0.0, len(target_keys) - max_distractor_overlap),
+            round(member_advantage, 2),
+        )
+        min_match_strength = (
+            DOMINANT_PROFILE_MIN_MATCH_STRENGTH
+            if mode == "dominant"
+            else SPATIAL_PROFILE_MIN_MATCH_STRENGTH
+        )
+        if (
+            max_distractor_overlap >= len(target_keys)
+            or weakest_match_strength < min_match_strength
+            or member_advantage < PROFILE_MIN_MEMBER_ADVANTAGE
+        ):
             continue
 
         label = " and ".join(SENSE_LABELS[key] for key in target_keys)
@@ -432,6 +490,9 @@ def build_profile_candidates(
             f"target={label}",
             f"matches={', '.join(match.food for match in chosen_matches)}",
             f"distractor-overlap-max={max_distractor_overlap}",
+            f"weakest-match-strength={weakest_match_strength:.2f}",
+            f"strongest-distractor-strength={strongest_distractor_strength:.2f}",
+            f"member-advantage={member_advantage:.2f}",
         ]
         candidates.append(
             MultiFoodCandidate(
@@ -489,7 +550,10 @@ def build_population_candidates(
                 correct = (ranked[0][0], ranked[1][0])
                 tuple_margin = ranked[1][1] - ranked[2][1]
                 tuple_strength = (ranked[0][1] + ranked[1][1]) / 2
-                if tuple_strength >= 0.55 and tuple_margin >= 0.08:
+                if (
+                    tuple_strength >= BLOCK4_MIN_TUPLE_STRENGTH
+                    and tuple_margin >= BLOCK4_MIN_MARGIN
+                ):
                     distractors = [
                         (ranked[0][0], ranked[2][0]),
                         (ranked[1][0], ranked[2][0]),
@@ -516,6 +580,7 @@ def build_population_candidates(
                                 notes=[
                                     f"top-difference={tuple_label(correct)}",
                                     f"avg-top-diff={tuple_strength:.2f}",
+                                    f"second-vs-third margin={tuple_margin:.2f}",
                                 ],
                             )
                         )
@@ -523,12 +588,12 @@ def build_population_candidates(
                 overall = overall_difference_score(left_summary, right_summary)
                 top_diff = ranked[0][1]
                 magnitude_label = None
-                if overall >= 0.55 and top_diff >= 0.95:
+                if overall >= BLOCK5_SIGNIFICANT_MIN_OVERALL and top_diff >= BLOCK5_SIGNIFICANT_MIN_TOP:
                     magnitude_label = "Significant"
                     margin = overall
-                elif overall <= 0.26 and top_diff <= 0.52:
+                elif overall <= BLOCK5_SUBTLE_MAX_OVERALL and top_diff <= BLOCK5_SUBTLE_MAX_TOP:
                     magnitude_label = "Subtle"
-                    margin = 0.52 - top_diff
+                    margin = BLOCK5_SUBTLE_MAX_TOP - top_diff
                 else:
                     continue
 
@@ -1112,7 +1177,7 @@ def build_pack() -> dict[str, Any]:
             "partId": "part_a",
             "title": "Block 2: Dominant Profile Similarity",
             "intro": "In this block, you will compare several numbered foods at once and identify which foods match a target flavor profile.",
-            "taskInstruction": "Select all numbered foods that match the target profile. Use the chart only, and submit once your checkbox choices are final.",
+            "taskInstruction": "Select **exactly 2** numbered foods that match the target profile. Use the chart only, and submit once your two selections are final.",
             "onboarding": [],
             "practiceTrials": block2_practice,
             "realTrials": block2_real,
@@ -1122,7 +1187,7 @@ def build_pack() -> dict[str, Any]:
             "partId": "part_a",
             "title": "Block 3: Spatial Profile Comparison",
             "intro": "In this block, you will identify foods that match a target profile defined by attributes in different regions of the chart space, such as one attribute on one side and another on the opposite side.",
-            "taskInstruction": "Select all numbered foods that match the target spatial profile.",
+            "taskInstruction": "Select **exactly 2** numbered foods that match the target spatial profile.",
             "onboarding": [],
             "practiceTrials": block3_practice,
             "realTrials": block3_real,

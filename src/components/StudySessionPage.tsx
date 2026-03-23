@@ -239,14 +239,16 @@ export default function StudySessionPage() {
     }));
   }
 
-  function toggleMultiAnswer(option: string) {
-    setActiveMultiAnswer((prev) => {
-      const next = prev.includes(option)
-        ? prev.filter((item) => item !== option)
+function toggleMultiAnswer(option: string) {
+  setActiveMultiAnswer((prev) => {
+    const next = prev.includes(option)
+      ? prev.filter((item) => item !== option)
+      : prev.length >= 2
+        ? prev
         : [...prev, option];
-      return next.sort((left, right) => Number(left) - Number(right));
-    });
-  }
+    return next.sort((left, right) => Number(left) - Number(right));
+  });
+}
 
   function submitTrial(trial: Trial) {
     const userAnswer =
@@ -546,7 +548,10 @@ export default function StudySessionPage() {
                 <h2>
                   {currentStep.block.title} ({chartDisplayName(currentStep.trial.chartType)})
                 </h2>
-                <p className="muted">{currentStep.block.taskInstruction}</p>
+                <FormattedParagraph
+                  text={currentStep.block.taskInstruction}
+                  className="muted"
+                />
                 <div
                   className={`trial-question-row ${
                     currentStep.trial.answerMode === "multi_select_indices"
@@ -1082,7 +1087,7 @@ function isSubjectiveSectionComplete(
 function answerPanelTitle(answerMode: AnswerMode) {
   switch (answerMode) {
     case "multi_select_indices":
-      return "Select all matching indices";
+      return "Select exactly 2 indices";
     case "binary_choice":
       return "Choose one answer";
     case "single_choice_tuple":
@@ -1113,16 +1118,26 @@ function chartLegendItems(chartType: ChartType) {
   switch (chartType) {
     case "distribution_radar":
       return [
-        { label: "Profile outline", kind: "line" as const, color: "#dc2626" },
-        { label: "Distribution bands", kind: "fill" as const, color: "#f59e0b" },
+        { label: "Mean profile", kind: "line" as const, color: "#dc2626" },
+        {
+          label: "Rating distribution",
+          kind: "fill" as const,
+          color: "#f59e0b",
+          gradient: "linear-gradient(90deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.45) 100%)",
+        },
       ];
     case "histogram_small_multiples":
       return [
-        { label: "Frequency bars", kind: "fill" as const, color: "#0f766e" },
+        { label: "Rating Frequency", kind: "fill" as const, color: "#0f766e" },
       ];
     case "stacked_bar_distribution":
       return [
-        { label: "Stacked rating shares", kind: "fill" as const, color: "#f59e0b" },
+        {
+          label: "Rating Scale",
+          kind: "fill" as const,
+          color: "#f59e0b",
+          gradient: "linear-gradient(90deg, #fef3c7 0%, #feeaa3 20%, #fdd65c 40%, #f8b52b 60%, #df8a13 80%, #a95512 100%)",
+        },
       ];
     case "zchart":
       return [
@@ -1143,23 +1158,29 @@ function tutorialBullets(chartType: ChartType) {
   switch (chartType) {
     case "distribution_radar":
       return [
-        "Outline shows the average profile.",
-        "Bands show how ratings are distributed.",
+        "Red outline shows the average (mean) rating for each attribute.",
+        "Orange bands show the spread of ratings across participants.",
+        "Wider bands indicate more variation (less agreement), while narrow bands indicate more consistent ratings.",
       ];
     case "histogram_small_multiples":
       return [
         "Each panel shows one attribute.",
-        "Concentration indicates agreement.",
+        "Green bars show the frequency of ratings at each value (0-5).",
+        "Tall bars indicate more responses at that rating.",
+        "More concentrated bars indicate higher agreement, while spread-out bars indicate more variation.",
       ];
     case "stacked_bar_distribution":
       return [
-        "Each bar shows the full distribution.",
-        "More area at high values means stronger support.",
+        "Each bar shows the full distribution of ratings for one attribute.",
+        "Colored segments represent rating levels (low -> high).",
+        "Larger segments mean more responses at that rating.",
+        "More area toward higher values indicates stronger ratings, while more area toward lower values indicates weaker ratings.",
       ];
     case "zchart":
       return [
-        "Direction shows above or below the reference group.",
-        "Larger displacement means larger difference.",
+        "Each point shows how the group differs from the reference group.",
+        "Red indicates higher than the reference group, blue indicates lower.",
+        "Distance from the center shows the size of the difference (farther = larger difference).",
       ];
     case "dual_histogram":
       return [
@@ -1174,6 +1195,7 @@ function tutorialBullets(chartType: ChartType) {
 function legendSwatchStyle(item: {
   kind: "fill" | "line" | "dot";
   color: string;
+  gradient?: string;
 }) {
   if (item.kind === "line") {
     return {
@@ -1193,10 +1215,10 @@ function legendSwatchStyle(item: {
     };
   }
   return {
-    width: "12px",
+    width: item.gradient ? "24px" : "12px",
     height: "12px",
     borderRadius: "4px",
-    background: item.color,
+    background: item.gradient ?? item.color,
     display: "inline-block",
     border: "1px solid rgba(15, 23, 42, 0.12)",
   };
@@ -1591,7 +1613,7 @@ function FoodPanelCard({
 
 function isAnswerReady(answerMode: AnswerMode, answer: string | string[]) {
   if (answerMode === "multi_select_indices") {
-    return Array.isArray(answer) && answer.length > 0;
+    return Array.isArray(answer) && answer.length === 2;
   }
   return typeof answer === "string" && answer.length > 0;
 }
