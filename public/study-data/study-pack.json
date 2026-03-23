@@ -24968,7 +24968,7 @@
             "foodNames": [
               "Orange Juice"
             ],
-            "comparisonLabel": "Female Participants vs Rest of the Population",
+            "comparisonLabel": "Baseline: Female Participants | Compared: Rest of the Population",
             "populationA": {
               "id": "gender:female",
               "label": "Female Participants",
@@ -25592,7 +25592,7 @@
             "foodNames": [
               "Dark Chocolate"
             ],
-            "comparisonLabel": "Female Participants vs Rest of the Population",
+            "comparisonLabel": "Baseline: Female Participants | Compared: Rest of the Population",
             "populationA": {
               "id": "gender:female",
               "label": "Female Participants",
@@ -26208,7 +26208,7 @@
           "chartType": "zchart",
           "taskType": "distribution_comparison",
           "answerMode": "single_choice_tuple",
-          "prompt": "For these two populations, on which taste attributes do they differ?",
+          "prompt": "For these two populations, which pair of taste attributes shows the strongest differences?",
           "options": [
             "Savory, Fatty",
             "Savory, Salty",
@@ -26223,7 +26223,7 @@
             "foodNames": [
               "Parmesan"
             ],
-            "comparisonLabel": "Indian participants vs Italian participants",
+            "comparisonLabel": "Baseline: Indian participants | Compared: Italian participants",
             "populationA": {
               "id": "nationality:indian",
               "label": "Indian participants",
@@ -26846,7 +26846,7 @@
           "chartType": "zchart",
           "taskType": "distribution_comparison",
           "answerMode": "single_choice_tuple",
-          "prompt": "For these two populations, on which taste attributes do they differ?",
+          "prompt": "For these two populations, which pair of taste attributes shows the strongest differences?",
           "options": [
             "Aromatic, Texture",
             "Aromatic, Piquant",
@@ -26861,7 +26861,7 @@
             "foodNames": [
               "Nutella"
             ],
-            "comparisonLabel": "Asian participants vs White participants",
+            "comparisonLabel": "Baseline: Asian participants | Compared: White participants",
             "populationA": {
               "id": "race:asian",
               "label": "Asian participants",
@@ -27482,7 +27482,7 @@
           "chartType": "dual_histogram",
           "taskType": "distribution_comparison",
           "answerMode": "single_choice_tuple",
-          "prompt": "For these two populations, on which taste attributes do they differ?",
+          "prompt": "For these two populations, which pair of taste attributes shows the strongest differences?",
           "options": [
             "Savory, Salty",
             "Savory, Bitter",
@@ -27497,7 +27497,7 @@
             "foodNames": [
               "Soy Sauce"
             ],
-            "comparisonLabel": "Asian participants vs White participants",
+            "comparisonLabel": "Baseline: Asian participants | Compared: White participants",
             "populationA": {
               "id": "race:asian",
               "label": "Asian participants",
@@ -28118,7 +28118,7 @@
           "chartType": "zchart",
           "taskType": "distribution_comparison",
           "answerMode": "single_choice_tuple",
-          "prompt": "For these two populations, on which taste attributes do they differ?",
+          "prompt": "For these two populations, which pair of taste attributes shows the strongest differences?",
           "options": [
             "Savory, Salty",
             "Savory, Bitter",
@@ -28133,7 +28133,7 @@
             "foodNames": [
               "Soy Sauce"
             ],
-            "comparisonLabel": "Asian participants vs White participants",
+            "comparisonLabel": "Baseline: Asian participants | Compared: White participants",
             "populationA": {
               "id": "race:asian",
               "label": "Asian participants",
@@ -28754,7 +28754,7 @@
           "chartType": "dual_histogram",
           "taskType": "distribution_comparison",
           "answerMode": "single_choice_tuple",
-          "prompt": "For these two populations, on which taste attributes do they differ?",
+          "prompt": "For these two populations, which pair of taste attributes shows the strongest differences?",
           "options": [
             "Aromatic, Texture",
             "Aromatic, Piquant",
@@ -28769,7 +28769,7 @@
             "foodNames": [
               "Nutella"
             ],
-            "comparisonLabel": "Asian participants vs White participants",
+            "comparisonLabel": "Baseline: Asian participants | Compared: White participants",
             "populationA": {
               "id": "race:asian",
               "label": "Asian participants",
@@ -29413,7 +29413,7 @@
             "foodNames": [
               "Salami"
             ],
-            "comparisonLabel": "Asian participants vs White participants",
+            "comparisonLabel": "Baseline: Asian participants | Compared: White participants",
             "populationA": {
               "id": "race:asian",
               "label": "Asian participants",
@@ -30049,7 +30049,7 @@
             "foodNames": [
               "Black Tea"
             ],
-            "comparisonLabel": "Female Participants vs Rest of the Population",
+            "comparisonLabel": "Baseline: Female Participants | Compared: Rest of the Population",
             "populationA": {
               "id": "gender:female",
               "label": "Female Participants",
@@ -30683,7 +30683,7 @@
             "foodNames": [
               "Almonds"
             ],
-            "comparisonLabel": "Non Hispanic White participants vs South Asian participants",
+            "comparisonLabel": "Baseline: Non Hispanic White participants | Compared: South Asian participants",
             "populationA": {
               "id": "ethnicity:non_hispanic_white",
               "label": "Non Hispanic White participants",
@@ -31317,7 +31317,7 @@
             "foodNames": [
               "Almonds"
             ],
-            "comparisonLabel": "Non Hispanic White participants vs South Asian participants",
+            "comparisonLabel": "Baseline: Non Hispanic White participants | Compared: South Asian participants",
             "populationA": {
               "id": "ethnicity:non_hispanic_white",
               "label": "Non Hispanic White participants",
@@ -31951,7 +31951,7 @@
             "foodNames": [
               "Black Tea"
             ],
-            "comparisonLabel": "Female Participants vs Rest of the Population",
+            "comparisonLabel": "Baseline: Female Participants | Compared: Rest of the Population",
             "populationA": {
               "id": "gender:female",
               "label": "Female Participants",

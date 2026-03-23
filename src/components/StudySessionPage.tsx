@@ -1141,13 +1141,14 @@ function chartLegendItems(chartType: ChartType) {
       ];
     case "zchart":
       return [
-        { label: "Higher than population A", kind: "dot" as const, color: "#d9534f" },
-        { label: "Lower than population A", kind: "dot" as const, color: "#0275d8" },
+        { label: "Baseline", kind: "line" as const, color: "#444444" },
+        { label: "Higher than baseline", kind: "dot" as const, color: "#d9534f" },
+        { label: "Lower than baseline", kind: "dot" as const, color: "#0275d8" },
       ];
     case "dual_histogram":
       return [
-        { label: "Population A", kind: "fill" as const, color: "#94a3b8" },
-        { label: "Population B", kind: "fill" as const, color: "#ea580c" },
+        { label: "Baseline group", kind: "fill" as const, color: "#94a3b8" },
+        { label: "Compared group", kind: "fill" as const, color: "#ea580c" },
       ];
     default:
       return [];
@@ -1184,8 +1185,10 @@ function tutorialBullets(chartType: ChartType) {
       ];
     case "dual_histogram":
       return [
-        "Each side shows one population.",
-        "Separated shapes indicate stronger differences.",
+        "Each panel shows one attribute.",
+        "Gray bars represent the baseline group, orange bars represent the compared group.",
+        "Bars on opposite sides allow direct comparison of rating frequencies.",
+        "Greater separation between the two sides indicates a larger difference between groups.",
       ];
     default:
       return [];
@@ -1553,9 +1556,9 @@ function renderPopulationComparison(
     return (
       <div className="comparison-stack">
         <p className="muted small comparison-label-row">
-          <span>{stimulus.populationA.label}</span>
-          <span>vs</span>
-          <span>{stimulus.populationB.label}</span>
+          <span>Baseline: {stimulus.populationA.label}</span>
+          <span>|</span>
+          <span>Compared: {stimulus.populationB.label}</span>
         </p>
         <ZGlyph
           senses={stimulus.senses}
@@ -1571,9 +1574,9 @@ function renderPopulationComparison(
   return (
     <div className="comparison-stack">
       <p className="muted small comparison-label-row">
-        <span>{stimulus.populationA.label}</span>
-        <span>vs</span>
-        <span>{stimulus.populationB.label}</span>
+        <span>Baseline: {stimulus.populationA.label}</span>
+        <span>|</span>
+        <span>Compared: {stimulus.populationB.label}</span>
       </p>
       <DualHistogramComparison
         senses={stimulus.senses}

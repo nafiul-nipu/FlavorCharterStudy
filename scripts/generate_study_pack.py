@@ -77,8 +77,8 @@ BLOCK1_MIN_MARGIN = 0.06
 PROFILE_MIN_MEMBER_ADVANTAGE = 0.08
 DOMINANT_PROFILE_MIN_MATCH_STRENGTH = 1.45
 SPATIAL_PROFILE_MIN_MATCH_STRENGTH = 0.75
-BLOCK4_MIN_TUPLE_STRENGTH = 0.7
-BLOCK4_MIN_MARGIN = 0.14
+BLOCK4_MIN_TUPLE_STRENGTH = 0.8
+BLOCK4_MIN_MARGIN = 0.18
 BLOCK5_SIGNIFICANT_MIN_OVERALL = 0.62
 BLOCK5_SIGNIFICANT_MIN_TOP = 1.05
 BLOCK5_SUBTLE_MAX_OVERALL = 0.25
@@ -219,6 +219,10 @@ def display_label(field: str, value: str) -> str:
             return "Rest of the Population"
         return "Participants"
     return f"{pretty.title()} participants"
+
+
+def comparison_display_label(field: str, left: str, right: str) -> str:
+    return f"Baseline: {display_label(field, left)} | Compared: {display_label(field, right)}"
 
 
 def build_group_maps(
@@ -566,7 +570,7 @@ def build_population_candidates(
                             PopulationComparisonCandidate(
                                 stimulus_id=f"{field}-{left}-vs-{right}-{food}",
                                 food=food,
-                                comparison_label=f"{display_label(field, left)} vs {display_label(field, right)}",
+                                comparison_label=comparison_display_label(field, left, right),
                                 population_a_id=f"{field}:{left}",
                                 population_a_label=display_label(field, left),
                                 population_a_summary=left_summary,
@@ -601,7 +605,7 @@ def build_population_candidates(
                     PopulationComparisonCandidate(
                         stimulus_id=f"magnitude-{field}-{left}-vs-{right}-{food}",
                         food=food,
-                        comparison_label=f"{display_label(field, left)} vs {display_label(field, right)}",
+                        comparison_label=comparison_display_label(field, left, right),
                         population_a_id=f"{field}:{left}",
                         population_a_label=display_label(field, left),
                         population_a_summary=left_summary,
@@ -982,7 +986,7 @@ def build_pack() -> dict[str, Any]:
             chart_type="zchart",
             task_type="distribution_comparison",
             answer_mode="single_choice_tuple",
-            prompt="For these two populations, on which taste attributes do they differ?",
+            prompt="For these two populations, which pair of taste attributes shows the strongest differences?",
             options=block4_practice_candidate.options,
             correct_answer=tuple_label(block4_practice_candidate.correct_keys),
             stimulus=comparison_stimulus(block4_practice_candidate),
@@ -1010,7 +1014,7 @@ def build_pack() -> dict[str, Any]:
                 chart_type=chart_type,
                 task_type="distribution_comparison",
                 answer_mode="single_choice_tuple",
-                prompt="For these two populations, on which taste attributes do they differ?",
+                prompt="For these two populations, which pair of taste attributes shows the strongest differences?",
                 options=candidate.options,
                 correct_answer=tuple_label(candidate.correct_keys),
                 stimulus=comparison_stimulus(candidate),
